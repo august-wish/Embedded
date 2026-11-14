@@ -1,5 +1,7 @@
 # Smart Cane dashboard · 20 Nov checkpoint
 
+Dashboard owner: **Boom Udomchok (GitHub: [@Boomudm](https://github.com/Boomudm))**. This folder contains the checkpoint viewer, its mock evidence, and the reviewable source of the hosted caregiver website.
+
 This is Udomchok's React dashboard in `dashboard/`. It reads the provisional IF-04 Cloud → Dashboard model and displays the latest `distance_cm`, `source_id` (Node), `source_seq`, Cloud ingestion time, and freshness. The full caregiver UI already exists separately; this small screen makes the checkpoint trace easy to record.
 
 The deployed caregiver website's reviewable source is in `dashboard/hosted-site/`. It has its own D1 database and deployment flow; this checkpoint viewer still uses the team mock until D-04 is agreed.
