@@ -20,6 +20,9 @@ Node --ESP-NOW--> Gateway --Wi-Fi--> Cloud --> Dashboard
 | Thapanakorn Chitvibulsophon | PM & Test Lead | `docs/test/` |
 | Thiti Wanganuttara | System Architect & Integration | `docs/architecture/`, `docs/interface/`, `docs/integration/`, `tools/` |
 
+## New here? Start with `docs/TEAM_START_HERE.md`
+Per-role notes, checkpoint goal (20 Nov), how to push, how to ask for a contract change.
+
 ## Folder map
 - `docs/architecture/` — system design and data flow
 - `docs/interface/` — interface contract (message formats) and example packets
