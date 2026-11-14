@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5f7fa">
+  <meta name="description" content="Smart Cane caregiver dashboard prototype for safety monitoring, GPS tracking, sensors, and emergency response.">
+  <title>Smart Cane Care — Caregiver Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css?v=20261111-readable-type">
+</head>
+<body>
+  <svg class="svg-sprite" aria-hidden="true">
+    <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="m9 12 2 2 4-4"/></symbol>
+    <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></symbol>
+    <symbol id="i-pin" viewBox="0 0 24 24"><path d="M20 10c0 5-8 12-8 12S4 15 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></symbol>
+    <symbol id="i-wave" viewBox="0 0 24 24"><path d="M3 12h3l2-7 4 14 3-10 2 3h4"/></symbol>
+    <symbol id="i-alert" viewBox="0 0 24 24"><path d="M10.3 3.8 2 18a2 2 0 0 0 1.7 3h16.6a2 2 0 0 0 1.7-3L13.7 3.8a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+    <symbol id="i-link" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.1 0l2.3-2.3a5 5 0 0 0-7.1-7.1L11 4.9M14 11a5 5 0 0 0-7.1 0l-2.3 2.3a5 5 0 0 0 7.1 7.1l1.3-1.3"/></symbol>
+    <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="7" r="4"/><path d="M4 21v-2a8 8 0 0 1 16 0v2"/></symbol>
+    <symbol id="i-settings" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-2.8 2.8-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.6v.2h-4V21a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1L4.2 17l.1-.1a1.7 1.7 0 0 0 .3-1.9A1.7 1.7 0 0 0 3 14H2.8v-4H3a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9L4.2 7 7 4.2l.1.1a1.7 1.7 0 0 0 1.9.3A1.7 1.7 0 0 0 10 3V2.8h4V3a1.7 1.7 0 0 0 1 1.6 1.7 1.7 0 0 0 1.9-.3l.1-.1L19.8 7l-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.6 1h.2v4H21a1.7 1.7 0 0 0-1.6 1Z"/></symbol>
+    <symbol id="i-heart" viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0-.1-7.8Z"/></symbol>
+    <symbol id="i-scan" viewBox="0 0 24 24"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/><path d="M7 12h10M14 9l3 3-3 3"/></symbol>
+    <symbol id="i-move" viewBox="0 0 24 24"><path d="M5 9 2 12l3 3M9 5l3-3 3 3M15 19l-3 3-3-3M19 9l3 3-3 3"/><path d="M2 12h20M12 2v20"/></symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol>
+    <symbol id="i-bell" viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></symbol>
+    <symbol id="i-chevron" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
+    <symbol id="i-external" viewBox="0 0 24 24"><path d="M15 3h6v6M10 14 21 3M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></symbol>
+    <symbol id="i-wifi" viewBox="0 0 24 24"><path d="M5 12.6a11 11 0 0 1 14 0M8.5 16a6 6 0 0 1 7 0M12 20h.01M2 9a16 16 0 0 1 20 0"/></symbol>
+    <symbol id="i-cpu" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="2"/><path d="M9 1v3M15 1v3M9 20v3M15 20v3M20 9h3M20 14h3M1 9h3M1 14h3M9 9h6v6H9z"/></symbol>
+    <symbol id="i-camera" viewBox="0 0 24 24"><path d="M14.5 4 16 7h3a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h3l1.5-3h5Z"/><circle cx="12" cy="13" r="3"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></symbol>
+    <symbol id="i-filter" viewBox="0 0 24 24"><path d="M4 5h16M7 12h10M10 19h4"/></symbol>
+    <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
+  </svg>
+
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <div class="brand-mark"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M9 26V12c0-4 3-7 7-7h5c2.8 0 5 2.2 5 5s-2.2 5-5 5h-3" stroke="currentColor" stroke-width="4.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div><strong>Smart Cane</strong><span>Caregiver monitoring</span></div>
+      </div>
+      <nav class="primary-nav" aria-label="Primary navigation">
+        <button class="nav-item active" data-page="overview"><svg><use href="#i-grid"/></svg><span>Overview</span></button>
+        <button class="nav-item" data-page="alerts"><svg><use href="#i-alert"/></svg><span>Emergency alerts</span><span class="nav-count" id="navAlertCount">0</span></button>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="caregiver-avatar" id="caregiverInitials">PC</div>
+        <div><strong id="caregiverName">Caregiver</strong><span id="caregiverEmail">Signed in securely</span></div>
+        <button class="signout-link" id="logoutButton" type="button" aria-label="Sign out">ออก</button>
+      </div>
+    </aside>
+
+    <div class="main-shell">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="icon-button mobile-menu" id="menuButton" aria-label="Open menu"><svg><use href="#i-menu"/></svg></button>
+          <div><span class="eyebrow">CAREGIVER DASHBOARD</span><h1 id="pageTitle">Safety overview</h1></div>
+        </div>
+        <div class="topbar-right">
+          <div class="person-control">
+            <label for="personSelect">Monitoring</label>
+            <select id="personSelect" aria-label="เลือกผู้ที่อยู่ในการดูแล"></select>
+            <button class="add-person-button" id="managePeopleButton" aria-label="เพิ่มผู้ที่อยู่ในการดูแล">+</button>
+          </div>
+          <div class="sync-status"><span class="connection-dot"></span><div><strong id="headerConnection">Live</strong><span id="syncTime">Synced just now</span></div></div>
+          <div class="last-sync"><span>Last sync</span><strong id="lastSyncTop">Waiting for data</strong></div>
+          <button class="icon-button bell-button" id="bellButton" aria-label="Notifications"><svg><use href="#i-bell"/></svg><span class="notification-dot" id="notificationDot" hidden></span></button>
+        </div>
+      </header>
+
+      <main>
+        <section class="page active" id="page-overview" data-title="Safety overview">
+          <div class="overview-hero">
+            <div class="hero-glow" aria-hidden="true"></div>
+            <img class="care-hero-photo" src="assets/smart-cane-hero.png" alt="Older adult outdoors using the Smart Cane">
+            <div class="hero-main">
+          <div class="page-intro">
+            <div><p class="intro-kicker" id="currentDateLabel">Tuesday, 11 November</p><h2 id="welcomeTitle">Good morning</h2><p>Here’s <strong id="activePersonName">Somchai</strong>’s safety overview.</p></div>
+          </div>
+
+          <div class="emergency-banner" id="emergencyBanner" hidden>
+            <div class="emergency-icon"><svg><use href="#i-alert"/></svg></div>
+            <div class="emergency-copy"><span class="alert-label">EMERGENCY ALERT</span><h3 id="bannerTitle">Possible fall detected</h3><p id="bannerCopy">TinyML motion analysis detected a fall-like event at <strong>10:42:18</strong>.</p></div>
+            <button class="btn btn-danger" id="viewAlertButton">View alert details</button>
+          </div>
+
+          <div class="caution-banner" id="cautionBanner" hidden>
+            <div class="caution-icon"><svg><use href="#i-alert"/></svg></div>
+            <div><span class="alert-label" id="cautionLabel">SAFETY CAUTION</span><h3 id="cautionTitle">Low light detected</h3><p id="cautionCopy">Visibility may be limited. Please check the user's surroundings.</p></div>
+          </div>
+
+          <article class="safety-card state-safe" id="safetyCard">
+            <div class="safety-main">
+              <div class="safety-status-icon"><svg><use href="#i-shield"/></svg><span class="pulse-ring"></span></div>
+              <div><span class="label">SAFETY SUMMARY</span><h3 id="safetyStatus">No active safety alerts</h3><p id="safetyMessage">Somchai is safe and being monitored normally.</p></div>
+            </div>
+            <div class="safety-meta">
+              <div><svg><use href="#i-link"/></svg><span>Device connected</span><strong id="activeDeviceId">SC-ESP32-001</strong></div>
+              <div><svg><use href="#i-clock"/></svg><span>Latest sync</span><strong id="lastStatusTime">Just now</strong></div>
+              <div><svg><use href="#i-user"/></svg><span>Monitored user</span><strong id="activeEmergencies">Somchai</strong></div>
+            </div>
+          </article>
+
+          <div class="contract-strip" aria-label="Data source and freshness">
+            <div><span>INTERFACE</span><strong id="contractVersion">v0.2</strong></div>
+            <div><span>SOURCE</span><strong id="sourceIdentity">Waiting for data</strong></div>
+            <div><span>ORIGIN</span><strong id="originKind">Unknown</strong></div>
+            <div><span>FRESHNESS</span><strong id="freshnessState">Unknown clock</strong></div>
+            <div><span>SENSOR TIME</span><strong id="sampleTime">Unavailable</strong></div>
+            <div><span>CLOUD TIME</span><strong id="cloudTime">Unavailable</strong></div>
+          </div>
+            </div>
+          </div>
+
+          <div class="metrics-grid">
+            <article class="metric-card" id="heartCard">
+              <div class="metric-head"><span class="metric-icon heart"><svg><use href="#i-heart"/></svg></span><span class="status-chip status-normal" id="heartChip">Normal</span></div>
+              <span class="metric-label">Heart rate</span><div class="metric-value"><strong id="heartValue">76</strong><span id="heartUnit">BPM</span></div>
+              <svg class="sparkline" viewBox="0 0 220 48" preserveAspectRatio="none"><path class="area heart-area" d="M0 38 C22 38 25 20 42 24 S66 45 82 27 S105 12 120 30 S144 43 160 25 S187 12 220 20 L220 48 L0 48Z"/><path class="line heart-line" d="M0 38 C22 38 25 20 42 24 S66 45 82 27 S105 12 120 30 S144 43 160 25 S187 12 220 20"/></svg>
+              <div class="metric-foot"><span id="heartDetail">Within resting range</span><span class="freshness">Updated 8 sec ago</span></div>
+            </article>
+            <article class="metric-card" id="movementCard">
+              <div class="metric-head"><span class="metric-icon move"><svg><use href="#i-move"/></svg></span><span class="status-chip status-normal" id="movementChip">Normal</span></div>
+              <span class="metric-label">Movement status</span><div class="metric-value text-value"><strong id="movementValue">Walking</strong></div>
+              <div class="motion-viz"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+              <div class="metric-foot"><span id="movementDetail">Steady movement pattern</span><span class="freshness">Updated 5 sec ago</span></div>
+            </article>
+            <article class="metric-card" id="lightCard">
+              <div class="metric-head"><span class="metric-icon sun"><svg><use href="#i-sun"/></svg></span><span class="status-chip status-normal" id="lightChip">Normal</span></div>
+              <span class="metric-label">Environment light</span><div class="metric-value"><strong id="lightValue">620</strong><span>lux</span></div>
+              <div class="light-viz"><svg><use href="#i-sun"/></svg><span><i style="width:67%"></i></span></div>
+              <div class="metric-foot"><span id="lightDetail">Comfortable lighting</span><span class="freshness">Updated 12 sec ago</span></div>
+            </article>
+          </div>
+
+          <div class="overview-lower">
+            <article class="card map-card">
+              <div class="card-header"><div><span class="section-kicker">VALIDATED GPS</span><h3>Latest known location</h3></div><div class="gps-live" id="gpsAvailability"><span></span>GPS unavailable</div></div>
+              <div class="map" id="overviewMap" aria-label="Mock map showing latest known location near Benjakitti Park, Bangkok">
+                <div class="map-canvas">
+                  <svg viewBox="0 0 1000 520" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+                    <rect width="1000" height="520" fill="#e9efe9"/>
+                    <path class="water" d="M695 -20c-37 95-4 124-42 199-40 79-101 89-110 171-5 42 17 91 57 180h235c-35-99-67-165-48-234 18-67 87-108 93-201 3-44-7-82-26-115Z"/>
+                    <path class="park" d="M90 55h235l47 80-55 108-236-21-25-93Z"/>
+                    <path class="park" d="M605 330h280l36 140-301 40-65-106Z"/>
+                    <g class="minor-roads"><path d="M-20 87 1020 438M-20 366 700-20M130 540 1000 50M365-20 300 540M560-10 514 540M820-20 790 540"/><path d="M0 180h1000M0 290h1000M0 430h1000"/></g>
+                    <g class="major-roads"><path d="M-20 257C208 226 389 286 602 248s240-58 418-30"/><path d="M463-20c-19 133 15 252-3 361-10 64-39 125-68 199"/></g>
+                    <g class="map-labels"><text x="120" y="128">Benjakitti Park</text><text x="700" y="389">Lumphini Park</text><text x="516" y="170">Sukhumvit Rd.</text><text x="374" y="380">Ratchadaphisek Rd.</text></g>
+                  </svg>
+                  <div class="location-marker" id="locationMarker"><span class="marker-wave"></span><span class="marker-pin"><svg><use href="#i-pin"/></svg></span><div class="marker-label"><strong>Somchai’s Smart Cane</strong><span id="markerStatus">Updated just now</span></div></div>
+                  <div class="map-controls"><button aria-label="Zoom in">+</button><button aria-label="Zoom out">−</button></div>
+                  <div class="map-legend"><span class="gps-dot"></span>Latest GPS position</div>
+                </div>
+              </div>
+              <div class="location-details"><div><span>LAST VALIDATED POSITION</span><strong id="locationLabel">Waiting for a valid GPS fix</strong><small id="locationCoordinates">Coordinates unavailable</small></div><div class="location-time"><span>GPS SAMPLE TIME</span><strong id="gpsTimestamp">Unavailable</strong></div><a class="btn btn-secondary maps-link disabled-link" id="overviewMapsLink" aria-disabled="true" target="_blank" rel="noreferrer"><svg><use href="#i-external"/></svg>Open in Google Maps</a></div>
+            </article>
+
+            <article class="card activity-card">
+              <div class="card-header"><div><span class="section-kicker">CLOUD RECORDS</span><h3>Recent activity</h3></div><span class="muted">Validated events</span></div>
+              <div class="activity-list" id="recentActivity">
+                <div class="activity-item"><span class="activity-dot teal"><svg><use href="#i-move"/></svg></span><div><strong>Walking detected</strong><p>Movement pattern is normal</p><span>10:41 AM</span></div></div>
+                <div class="activity-item"><span class="activity-dot blue"><svg><use href="#i-pin"/></svg></span><div><strong>Location updated</strong><p>Benjakitti Park, Bangkok</p><span>10:40 AM</span></div></div>
+                <div class="activity-item"><span class="activity-dot amber"><svg><use href="#i-scan"/></svg></span><div><strong>Obstacle avoided</strong><p>Object detected at 42 cm</p><span>10:36 AM</span></div></div>
+                <div class="activity-item"><span class="activity-dot green"><svg><use href="#i-wifi"/></svg></span><div><strong>Device synchronized</strong><p>All sensor data received</p><span>10:31 AM</span></div></div>
+              </div>
+            </article>
+          </div>
+          <div class="scenario-control overview-demo-control">
+            <label for="scenarioSelect">Demo state</label>
+            <div class="select-wrap"><select id="scenarioSelect">
+              <option value="live">Live database</option>
+              <option value="normal" selected>Normal operation</option>
+              <option value="high_heart">High heart rate</option>
+              <option value="dark">Dark environment</option>
+              <option value="obstacle">Obstacle detected</option>
+              <option value="fall">Fall detected</option>
+              <option value="sos">SOS triggered</option>
+              <option value="offline">Device offline</option>
+            </select><svg><use href="#i-chevron"/></svg></div>
+          </div>
+        </section>
+
+        <section class="page" id="page-location" data-title="Live location">
+          <div class="page-heading"><div><span class="intro-kicker">REAL-TIME POSITION</span><h2>Live location</h2><p>Latest reliable GPS position from SC-ESP32-001.</p></div><a class="btn btn-primary maps-link" href="https://www.google.com/maps?q=13.7262,100.5581" target="_blank" rel="noreferrer"><svg><use href="#i-external"/></svg>Open in Google Maps</a></div>
+          <article class="card full-map-card">
+            <div class="map-location-bar"><div class="gps-pulse"><span></span></div><div><strong>GPS signal active</strong><span id="fullMapUpdated">Last coordinate received just now</span></div><div class="accuracy"><span>POSITION ACCURACY</span><strong>±6 meters</strong></div></div>
+            <div class="map full-map" aria-label="Mock live location map"><div class="map-canvas">
+              <svg viewBox="0 0 1000 620" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="1000" height="620" fill="#e9efe9"/><path class="water" d="M695 -20c-37 95-4 124-42 199-40 79-101 89-110 171-5 42 17 91 57 270h235c-35-129-67-195-48-264 18-67 87-108 93-201 3-44-7-82-26-175Z"/><path class="park" d="M90 55h235l47 80-55 108-236-21-25-93Z"/><path class="park" d="M605 400h280l36 140-301 40-65-106Z"/><g class="minor-roads"><path d="M-20 87 1020 508M-20 436 700-20M130 650 1000 50M365-20 300 650M560-10 514 650M820-20 790 650"/><path d="M0 180h1000M0 320h1000M0 500h1000"/></g><g class="major-roads"><path d="M-20 287C208 256 389 316 602 278s240-58 418-30"/><path d="M463-20c-19 133 15 252-3 361-10 64-39 185-68 309"/></g><path class="trail" d="M367 365c31-44 52-25 83-66 31-42 5-76 49-97"/><g class="map-labels"><text x="120" y="128">Benjakitti Park</text><text x="700" y="459">Lumphini Park</text><text x="516" y="170">Sukhumvit Rd.</text></g></svg>
+              <div class="trail-dot t1"></div><div class="trail-dot t2"></div><div class="trail-dot t3"></div>
+              <div class="location-marker large"><span class="marker-wave"></span><span class="marker-pin"><svg><use href="#i-pin"/></svg></span><div class="marker-label"><strong>Somchai’s Smart Cane</strong><span>Latest known position</span></div></div>
+              <div class="map-controls"><button>+</button><button>−</button></div><div class="map-legend"><span class="gps-dot"></span>Latest position <i></i>Recent trail</div>
+            </div></div>
+            <div class="location-info-grid"><div><span>Latitude</span><strong>13.7262° N</strong></div><div><span>Longitude</span><strong>100.5581° E</strong></div><div><span>GPS module</span><strong><i class="inline-dot green"></i> NEO-6M online</strong></div><div><span>Last GPS update</span><strong id="locationPageTime">Today, 10:42:21</strong></div></div>
+          </article>
+        </section>
+
+        <section class="page" id="page-sensors" data-title="Sensor monitoring">
+          <div class="page-heading"><div><span class="intro-kicker">HARDWARE TELEMETRY</span><h2>Sensor monitoring</h2><p>Detailed readings from the Smart Cane sensor node and gateway.</p></div><div class="live-pill"><span></span>Live mock telemetry</div></div>
+          <div class="sensor-grid">
+            <article class="card sensor-panel"><div class="sensor-title"><span class="metric-icon scan"><svg><use href="#i-scan"/></svg></span><div><h3>HC-SR04 Ultrasonic</h3><p>Obstacle proximity</p></div><span class="status-chip status-clear">Clear</span></div><div class="sensor-reading"><strong id="sensorDistance">146</strong><span>cm</span></div><div class="chart-labels"><span>Distance · last 60 seconds</span><span>Warning &lt; 60 cm</span></div><svg class="line-chart" viewBox="0 0 500 150" preserveAspectRatio="none"><g class="grid-lines"><path d="M0 25h500M0 75h500M0 125h500"/></g><path class="chart-area blue" d="M0 80 40 60 80 84 120 54 160 62 200 92 240 70 280 42 320 65 360 84 400 56 450 70 500 48V150H0Z"/><path class="chart-line blue" d="M0 80 40 60 80 84 120 54 160 62 200 92 240 70 280 42 320 65 360 84 400 56 450 70 500 48"/></svg><div class="sensor-meta"><span>Range 2–400 cm</span><span>Updated 3 sec ago</span></div></article>
+            <article class="card sensor-panel"><div class="sensor-title"><span class="metric-icon move"><svg><use href="#i-move"/></svg></span><div><h3>MPU6050 Motion</h3><p>Acceleration and tilt</p></div><span class="status-chip status-normal" id="motionSensorStatus">Normal</span></div><div class="axis-readings"><div><span>X-axis</span><strong>0.12 <small>g</small></strong></div><div><span>Y-axis</span><strong>0.04 <small>g</small></strong></div><div><span>Z-axis</span><strong>0.98 <small>g</small></strong></div></div><div class="tilt-card"><div class="tilt-orb"><span></span></div><div><span>MOVEMENT CLASSIFICATION</span><strong id="motionClass">Walking · steady</strong><small id="fallStatus">No fall pattern detected</small></div></div><div class="sensor-meta"><span>TinyML motion model</span><span>Updated 5 sec ago</span></div></article>
+            <article class="card sensor-panel"><div class="sensor-title"><span class="metric-icon heart"><svg><use href="#i-heart"/></svg></span><div><h3>MAX30102 Heart Rate</h3><p>Pulse monitoring</p></div><span class="status-chip status-normal">Available</span></div><div class="sensor-reading"><strong id="sensorHeart">76</strong><span>BPM</span></div><div class="chart-labels"><span>Heart rate · last 5 minutes</span><span>Resting range</span></div><svg class="line-chart" viewBox="0 0 500 150" preserveAspectRatio="none"><g class="grid-lines"><path d="M0 25h500M0 75h500M0 125h500"/></g><path class="chart-area red" d="M0 90 45 82 90 94 135 67 180 76 225 60 270 81 315 73 360 92 405 71 450 77 500 69V150H0Z"/><path class="chart-line red" d="M0 90 45 82 90 94 135 67 180 76 225 60 270 81 315 73 360 92 405 71 450 77 500 69"/></svg><div class="sensor-meta"><span>Signal quality: Good</span><span>Updated 8 sec ago</span></div></article>
+            <article class="card sensor-panel"><div class="sensor-title"><span class="metric-icon pin"><svg><use href="#i-pin"/></svg></span><div><h3>NEO-6M GPS</h3><p>Position and accuracy</p></div><span class="status-chip status-normal">8 satellites</span></div><div class="gps-coords"><div><span>LATITUDE</span><strong>13.7262° N</strong></div><div><span>LONGITUDE</span><strong>100.5581° E</strong></div></div><div class="signal-bars"><span>GPS signal</span><div><i></i><i></i><i></i><i></i><i></i></div><strong>Good</strong></div><div class="sensor-meta"><span>Accuracy ±6 m</span><span>Updated 4 sec ago</span></div></article>
+            <article class="card sensor-panel"><div class="sensor-title"><span class="metric-icon sun"><svg><use href="#i-sun"/></svg></span><div><h3>LDR Light Sensor</h3><p>Ambient light level</p></div><span class="status-chip status-normal">Normal</span></div><div class="sensor-reading"><strong>620</strong><span>lux</span></div><div class="gauge"><div><i style="width:67%"></i></div><div><span>Dark</span><span>Normal</span><span>Bright</span></div></div><div class="sensor-meta"><span>Comfortable environment</span><span>Updated 12 sec ago</span></div></article>
+            <article class="card sensor-panel ai-panel"><div class="sensor-title"><span class="metric-icon camera"><svg><use href="#i-camera"/></svg></span><div><h3>ESP32-S3 + TinyML</h3><p>On-device object classification</p></div><span class="status-chip status-normal">Model active</span></div><div class="ai-detection"><div class="ai-graphic"><span class="scan-corners"></span><svg><use href="#i-scan"/></svg></div><div><span>LATEST DETECTION</span><strong id="aiCategory">Clear path</strong><p id="aiConfidence">No obstacle category detected</p></div></div><div class="detection-history"><div><span class="detection-badge">Person</span><span>94% confidence</span><time>10:36:14</time></div><div><span class="detection-badge">Chair</span><span>89% confidence</span><time>10:28:03</time></div></div><div class="sensor-meta"><span>Model: cane-v2.1</span><span>Updated 6 sec ago</span></div></article>
+          </div>
+        </section>
+
+        <section class="page" id="page-alerts" data-title="Emergency alerts">
+          <div class="page-heading"><div><span class="intro-kicker">SAFETY RESPONSE</span><h2>Emergency alerts</h2><p>Review active and acknowledged safety events. Acknowledging does not confirm the user is safe.</p></div><span class="status-chip status-normal" id="alertPageStatus">No active emergency</span></div>
+          <div id="activeAlertArea" class="active-alert-area">
+            <div class="empty-state"><span><svg><use href="#i-shield"/></svg></span><h3>No active emergency alerts</h3><p>The Smart Cane is online and no urgent safety events require attention.</p></div>
+          </div>
+          <article class="card"><div class="card-header"><div><span class="section-kicker">RECENT</span><h3>Alert history</h3></div><span class="muted">Stable event IDs</span></div><div class="table-wrap"><table><thead><tr><th>Alert</th><th>Source</th><th>Time</th><th>Location</th><th>Delivery</th></tr></thead><tbody id="alertHistoryBody"><tr><td colspan="5">No alert records yet</td></tr></tbody></table></div></article>
+        </section>
+
+        <section class="page" id="page-history" data-title="Activity history">
+          <div class="page-heading"><div><span class="intro-kicker">EVENT RECORD</span><h2>Activity history</h2><p>Review safety, movement, sensor, and connection events.</p></div><button class="btn btn-secondary"><svg><use href="#i-filter"/></svg>Export records</button></div>
+          <div class="filter-bar"><label><span>Event type</span><select><option>All events</option><option>Safety alerts</option><option>Obstacle events</option><option>Connection events</option></select></label><label><span>Severity</span><select><option>All severities</option><option>Emergency</option><option>Warning</option><option>Information</option></select></label><label><span>Date range</span><select><option>Today</option><option>Last 7 days</option><option>Last 30 days</option></select></label><button class="btn btn-secondary">Apply filters</button></div>
+          <article class="card timeline-card"><div class="timeline-date">TODAY · 6 NOVEMBER 2026</div><div class="timeline" id="historyTimeline">
+            <div class="timeline-event"><span class="timeline-icon teal"><svg><use href="#i-move"/></svg></span><div><div class="event-top"><strong>Walking detected</strong><span class="status-chip status-normal">Normal</span><time>10:41:52</time></div><p>MPU6050 movement pattern classified as steady walking.</p><small>SC-ESP32-001 · Benjakitti Park, Bangkok</small></div></div>
+            <div class="timeline-event"><span class="timeline-icon blue"><svg><use href="#i-pin"/></svg></span><div><div class="event-top"><strong>GPS location updated</strong><span class="status-chip status-clear">Information</span><time>10:40:28</time></div><p>New position received with ±6 meter accuracy.</p><small>SC-ESP32-001 · 13.7262° N, 100.5581° E</small></div></div>
+            <div class="timeline-event"><span class="timeline-icon amber"><svg><use href="#i-scan"/></svg></span><div><div class="event-top"><strong>Obstacle detected</strong><span class="status-chip status-warning">Warning</span><time>10:36:14</time></div><p>Ultrasonic sensor detected an object at 42 cm. TinyML classified it as a person.</p><small>SC-ESP32-001 · Benjakitti Park, Bangkok</small></div></div>
+            <div class="timeline-event"><span class="timeline-icon green"><svg><use href="#i-wifi"/></svg></span><div><div class="event-top"><strong>Cloud synchronization complete</strong><span class="status-chip status-normal">Normal</span><time>10:31:02</time></div><p>Gateway uploaded 24 sensor readings successfully.</p><small>SC-ESP32-001 · Gateway GW-001</small></div></div>
+            <div class="timeline-event"><span class="timeline-icon navy"><svg><use href="#i-cpu"/></svg></span><div><div class="event-top"><strong>Smart Cane powered on</strong><span class="status-chip status-clear">Information</span><time>08:12:44</time></div><p>Sensor node, gateway, and TinyML model initialized successfully.</p><small>SC-ESP32-001 · Home</small></div></div>
+          </div></article>
+        </section>
+
+        <section class="page" id="page-settings" data-title="Device settings">
+          <div class="page-heading"><div><span class="intro-kicker">SYSTEM MANAGEMENT</span><h2>Device settings</h2><p>Connection health and prototype configuration for SC-ESP32-001.</p></div><button class="btn btn-secondary">Check for updates</button></div>
+          <div class="settings-grid">
+            <article class="card device-identity"><div class="device-art"><span></span><svg><use href="#i-wifi"/></svg></div><div><span class="section-kicker">PRIMARY DEVICE</span><h3>Somchai’s Smart Cane</h3><p>Device ID: SC-ESP32-001</p><div class="device-tags"><span>ESP32 Gateway</span><span>Firmware 2.1.4</span></div></div><button class="btn btn-secondary">Edit name</button></article>
+            <article class="card connection-card"><div class="card-header"><div><span class="section-kicker">CONNECTION PATH</span><h3>Device connectivity</h3></div><span class="status-chip status-normal" id="connectivityBadge">All systems online</span></div><div class="connection-flow"><div><span class="node-icon"><svg><use href="#i-cpu"/></svg></span><strong>Sensor node</strong><small>ESP-NOW</small><i class="flow-status online"></i></div><span class="flow-line"></span><div><span class="node-icon"><svg><use href="#i-wifi"/></svg></span><strong>Main gateway</strong><small>Wi-Fi</small><i class="flow-status online"></i></div><span class="flow-line"></span><div><span class="node-icon cloud">☁</span><strong>Cloud service</strong><small>Secure upload</small><i class="flow-status online"></i></div></div></article>
+            <article class="card status-list-card"><div class="card-header"><div><span class="section-kicker">DEVICE HEALTH</span><h3>System status</h3></div></div><div class="status-list"><div><span>Last successful transmission</span><strong id="lastTransmission">Today, 10:42:24</strong></div><div><span>Last synchronization</span><strong id="lastSyncSetting">Just now</strong></div><div><span>Sensor node battery</span><strong>82%</strong></div><div><span>Gateway signal strength</span><strong>−48 dBm · Excellent</strong></div></div></article>
+            <article class="card integration-card"><div class="integration-icon">#</div><div><span class="section-kicker">PLANNED INTEGRATION</span><h3>Discord emergency notifications</h3><p>Prototype configuration for sending urgent alerts with timestamp and latest GPS location.</p></div><div class="toggle-row"><span>Prototype preview</span><button class="toggle on" aria-label="Toggle Discord prototype preview"><i></i></button></div></article>
+            <article class="card thresholds-card"><div class="card-header"><div><span class="section-kicker">MONITORING RULES</span><h3>Alert thresholds</h3></div><button class="text-button">Edit</button></div><div class="threshold-list"><div><span>Obstacle warning distance</span><strong>60 cm</strong></div><div><span>Device offline warning</span><strong>After 90 sec</strong></div><div><span>Heart rate monitoring</span><strong>Reading only</strong></div><div><span>Fall sensitivity</span><strong>Balanced</strong></div></div><div class="info-note">This prototype does not provide medical diagnosis. Heart-rate data is shown for caregiver awareness only.</div></article>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <nav class="mobile-nav" aria-label="Mobile navigation">
+    <button class="active" data-page="overview"><svg><use href="#i-grid"/></svg><span>Overview</span></button>
+    <button data-page="alerts"><svg><use href="#i-alert"/></svg><span>Alerts</span><i id="mobileAlertDot" hidden></i></button>
+  </nav>
+
+  <div class="modal-backdrop" id="alertModal" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <button class="modal-close" id="closeModal" aria-label="Close"><svg><use href="#i-x"/></svg></button>
+      <div class="modal-alert-icon"><svg><use href="#i-alert"/></svg></div>
+      <span class="alert-label">EMERGENCY ALERT</span><h2 id="modalTitle">Possible fall detected</h2><p class="modal-lead" id="modalLead">TinyML motion analysis detected a fall-like event. Please contact the user or verify their location.</p>
+      <div class="modal-facts"><div><span>DEVICE / SOURCE</span><strong id="modalDevice">SC-ESP32-001</strong></div><div><span>EVENT TIME</span><strong id="modalTime">Unavailable</strong></div><div class="wide"><span>VALIDATED EVENT LOCATION</span><strong id="modalLocation">GPS unavailable</strong><small id="modalCoordinates">No coordinates are shown unless fix_valid is true.</small></div></div>
+      <div class="modal-note"><svg><use href="#i-alert"/></svg><p><strong>Important:</strong> Acknowledging this alert only confirms you have seen it. It does not cancel the emergency or confirm the user is safe.</p></div>
+      <div class="modal-actions"><a class="btn btn-secondary maps-link" href="https://www.google.com/maps?q=13.7262,100.5581" target="_blank" rel="noreferrer"><svg><use href="#i-external"/></svg>Open location</a><button class="btn btn-danger" id="acknowledgeButton"><svg><use href="#i-check"/></svg>Acknowledge alert</button></div>
+    </div>
+  </div>
+  <div class="modal-backdrop" id="peopleModal" hidden>
+    <div class="modal people-modal" role="dialog" aria-modal="true" aria-labelledby="peopleModalTitle">
+      <button class="modal-close" id="closePeopleModal" aria-label="Close"><svg><use href="#i-x"/></svg></button>
+      <span class="section-kicker">CARE TEAM</span>
+      <h2 id="peopleModalTitle">ผู้ที่คุณดูแล</h2>
+      <p class="modal-lead">เพิ่มได้หลายคน แต่ละคนเชื่อมกับ Device ID ของ Smart Cane คนละเครื่อง</p>
+      <div class="people-list" id="peopleList"></div>
+      <form class="person-form" id="personForm">
+        <h3>เพิ่มผู้ที่อยู่ในการดูแล</h3>
+        <label><span>ชื่อ</span><input name="display_name" required maxlength="60" placeholder="เช่น คุณแม่"></label>
+        <label><span>ความสัมพันธ์</span><input name="relationship" maxlength="60" placeholder="เช่น Family member"></label>
+        <label><span>Device ID</span><input name="device_id" required maxlength="64" pattern="[A-Za-z0-9_-]+" placeholder="SC-ESP32-002"></label>
+        <p class="form-message" id="personFormMessage" role="status"></p>
+        <button class="btn btn-primary" type="submit">เชื่อมต่อ Smart Cane</button>
+      </form>
+    </div>
+  </div>
+  <div class="toast" id="toast" role="status" hidden><svg><use href="#i-check"/></svg><div><strong>Alert acknowledged</strong><span>Emergency remains active until safety is verified.</span></div></div>
+  <script src="app.js?v=20261111-reference-match-2"></script>
+</body>
+</html>

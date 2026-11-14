@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f4f8f7">
+  <title>เข้าสู่ระบบ — Smart Cane Care</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css?v=20261107-care-team">
+</head>
+<body class="login-body">
+  <main class="login-shell">
+    <section class="login-visual" aria-label="Smart Cane caregiver safety platform">
+      <div class="login-brand"><span class="login-logo">✓</span><div><strong>Smart Cane</strong><small>Caregiver monitoring</small></div></div>
+      <div class="login-copy">
+        <span class="login-kicker">CAREGIVER SAFETY PLATFORM</span>
+        <h1>ดูแลคนสำคัญ<br>ได้ในที่เดียว</h1>
+        <p>ติดตามความปลอดภัย ชีพจร แสงแวดล้อม ตำแหน่ง และเหตุฉุกเฉินของผู้ที่คุณดูแลหลายคน</p>
+      </div>
+      <div class="login-features">
+        <div><strong>หลายคน</strong><span>เชื่อม Smart Cane ได้มากกว่าหนึ่งอุปกรณ์</span></div>
+        <div><strong>แจ้งเตือน</strong><span>หัวใจเต้นสูง พื้นที่มืด ล้ม และ SOS</span></div>
+        <div><strong>เป็นส่วนตัว</strong><span>ข้อมูลผูกกับบัญชีผู้ดูแลของคุณ</span></div>
+      </div>
+    </section>
+    <section class="login-panel">
+      <div class="login-card">
+        <span class="login-badge">SECURE ACCESS</span>
+        <h2>เข้าสู่ระบบผู้ดูแล</h2>
+        <p>เข้าสู่ระบบด้วยอีเมลและรหัสผ่านของ Smart Cane</p>
+        <p class="login-error" id="loginError" hidden>อีเมลหรือรหัสผ่านไม่ถูกต้อง หรือบัญชีถูกพักชั่วคราว โปรดลองใหม่ภายหลัง</p>
+        <form class="login-form" method="post" action="/auth/login">
+          <label>อีเมล<input name="email" type="email" autocomplete="username" required maxlength="254"></label>
+          <label>รหัสผ่าน<input name="password" type="password" autocomplete="current-password" required></label>
+          <button class="login-button" type="submit">เข้าสู่ระบบ <span>→</span></button>
+        </form>
+        <div class="login-security"><span>🔒</span><p><strong>ข้อมูลบัญชีเก็บในฐานข้อมูล</strong><br>รหัสผ่านถูกแฮชก่อนจัดเก็บ และเซสชันหมดอายุอัตโนมัติ</p></div>
+      </div>
+    </section>
+  </main>
+<script>if(new URLSearchParams(location.search).has('error'))document.getElementById('loginError').hidden=false</script>
+</body>
+</html>

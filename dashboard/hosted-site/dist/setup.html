@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f4f8f7">
+  <title>ตั้งค่าบัญชี — Smart Cane Care</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body class="login-body">
+  <main class="login-shell">
+    <section class="login-visual" aria-label="Smart Cane caregiver safety platform">
+      <div class="login-brand"><span class="login-logo">✓</span><div><strong>Smart Cane</strong><small>Caregiver monitoring</small></div></div>
+      <div class="login-copy"><span class="login-kicker">ACCOUNT SETUP</span><h1>ตั้งค่าบัญชี<br>ผู้ดูแลของคุณ</h1><p>สร้างรหัสผ่านสำหรับเข้าสู่เว็บ Smart Cane โดยตรง หลังตั้งค่าแล้วจะใช้ได้โดยไม่ต้องผ่านบัญชี ChatGPT</p></div>
+    </section>
+    <section class="login-panel">
+      <div class="login-card">
+        <span class="login-badge">ONE-TIME SETUP</span>
+        <h2>สร้างรหัสผ่าน</h2>
+        <p>บัญชีนี้ผูกกับอีเมล <strong>__USER_EMAIL__</strong> และผู้ที่คุณดูแลอยู่แล้ว</p>
+        <p class="login-error" id="setupError" hidden>ตั้งค่าบัญชีไม่สำเร็จ รหัสผ่านต้องมีอย่างน้อย 12 ตัวอักษรและตรงกันทั้งสองช่อง</p>
+        <form class="login-form" method="post" action="/auth/claim">
+          <label>รหัสผ่านใหม่<input name="password" type="password" autocomplete="new-password" minlength="12" maxlength="128" required></label>
+          <label>ยืนยันรหัสผ่าน<input name="confirm_password" type="password" autocomplete="new-password" minlength="12" maxlength="128" required></label>
+          <button class="login-button" type="submit">ตั้งค่าบัญชี <span>→</span></button>
+        </form>
+        <div class="login-security"><span>🔒</span><p><strong>ตั้งค่าครั้งแรกเท่านั้น</strong><br>รหัสผ่านไม่ถูกบันทึกเป็นข้อความปกติ และไม่ถูกส่งเข้า Git</p></div>
+      </div>
+    </section>
+  </main>
+  <script>if(new URLSearchParams(location.search).has('error'))document.getElementById('setupError').hidden=false</script>
+</body>
+</html>
