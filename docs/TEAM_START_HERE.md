@@ -89,3 +89,8 @@ Wi-Fi password, hotspot name, API keys, cloud tokens and the Discord webhook URL
 
 ## 7. Evidence: how to hand it to Thiti
 Put files in `docs/integration/evidence/` with this name: `G1_node-to-gateway_2026-11-17_serial.txt` (stage, what, date, kind). Or just send a photo/screenshot in the chat and Thiti commits it. A test counts as PASS only when a file exists.
+
+## 8. Optional: print one log line per event
+So Thiti can capture your board's Serial output as evidence with `tools/serial/capture_serial.py`, please print one simple line per event, for example:
+`TX node=1 seq=125 dist_cm=46.2` (Node) and `RX node=1 seq=125 dist_cm=46.2 ack=accepted` (Gateway).
+Full format: `docs/interface/SERIAL_LOG_FORMAT.md`. Other print lines are fine, they are ignored. If you prefer another format, tell Thiti and the tool will follow it.

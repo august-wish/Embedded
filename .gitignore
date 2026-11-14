@@ -19,3 +19,4 @@ node_modules/
 # Local assistant data
 .claude/
 tools/mock/demo_out/
+tools/serial/out/
