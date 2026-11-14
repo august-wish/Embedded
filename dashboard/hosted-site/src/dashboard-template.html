@@ -83,17 +83,6 @@
             <div><p class="intro-kicker" id="currentDateLabel">Tuesday, 11 November</p><h2 id="welcomeTitle">Good morning</h2><p>Here’s <strong id="activePersonName">Somchai</strong>’s safety overview.</p></div>
           </div>
 
-          <div class="emergency-banner" id="emergencyBanner" hidden>
-            <div class="emergency-icon"><svg><use href="#i-alert"/></svg></div>
-            <div class="emergency-copy"><span class="alert-label">EMERGENCY ALERT</span><h3 id="bannerTitle">Possible fall detected</h3><p id="bannerCopy">TinyML motion analysis detected a fall-like event at <strong>10:42:18</strong>.</p></div>
-            <button class="btn btn-danger" id="viewAlertButton">View alert details</button>
-          </div>
-
-          <div class="caution-banner" id="cautionBanner" hidden>
-            <div class="caution-icon"><svg><use href="#i-alert"/></svg></div>
-            <div><span class="alert-label" id="cautionLabel">SAFETY CAUTION</span><h3 id="cautionTitle">Low light detected</h3><p id="cautionCopy">Visibility may be limited. Please check the user's surroundings.</p></div>
-          </div>
-
           <article class="safety-card state-safe" id="safetyCard">
             <div class="safety-main">
               <div class="safety-status-icon"><svg><use href="#i-shield"/></svg><span class="pulse-ring"></span></div>
@@ -115,6 +104,17 @@
             <div><span>CLOUD TIME</span><strong id="cloudTime">Unavailable</strong></div>
           </div>
             </div>
+          </div>
+
+          <div class="emergency-banner" id="emergencyBanner" hidden>
+            <div class="emergency-icon"><svg><use href="#i-alert"/></svg></div>
+            <div class="emergency-copy"><span class="alert-label">EMERGENCY ALERT</span><h3 id="bannerTitle">Possible fall detected</h3><p id="bannerCopy">TinyML motion analysis detected a fall-like event at <strong>10:42:18</strong>.</p></div>
+            <button class="btn btn-danger" id="viewAlertButton">View alert details</button>
+          </div>
+
+          <div class="caution-banner" id="cautionBanner" hidden>
+            <div class="caution-icon"><svg><use href="#i-alert"/></svg></div>
+            <div><span class="alert-label" id="cautionLabel">SAFETY CAUTION</span><h3 id="cautionTitle">Low light detected</h3><p id="cautionCopy">Visibility may be limited. Please check the user's surroundings.</p></div>
           </div>
 
           <div class="metrics-grid">

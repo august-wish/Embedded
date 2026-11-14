@@ -182,3 +182,8 @@ body{font-size:16px}
   .overview-hero .safety-meta span,.overview-hero .safety-meta strong{grid-column:2;min-width:0;overflow-wrap:anywhere;font-size:12px}
   .overview-hero .safety-meta span{text-transform:none;letter-spacing:0}
 }
+
+/* Alerts follow the hero in document flow so they never cover the safety summary. */
+#page-overview > .emergency-banner,#page-overview > .caution-banner{position:relative;width:100%;min-height:0;margin:18px 0;z-index:auto}
+#page-overview > .emergency-banner[hidden],#page-overview > .caution-banner[hidden]{display:none}
+@media(max-width:560px){#page-overview > .emergency-banner,#page-overview > .caution-banner{padding:16px;gap:12px}}
