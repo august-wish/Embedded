@@ -1,0 +1,17 @@
+# Secrets - NEVER commit (course rule 4.5)
+secrets.h
+secrets.py
+.env
+*.pem
+*.key
+google-services.json
+serviceAccount*.json
+
+# Build / editor
+.pio/
+.vscode/
+build/
+__pycache__/
+*.pyc
+node_modules/
+.DS_Store
