@@ -58,8 +58,10 @@ def trace(source: str, seq: int, node_rows, gw_rows, cloud_url: str) -> list:
     else:
         hit = [r for r in gw_rows if r.get("source_id") == source and r.get("seq") == seq and r.get("event") == "rx"]
         acc = [r for r in hit if r.get("ack") == "accepted"]
+        ups = [r for r in gw_rows if r.get("source_id") == source and r.get("seq") == seq and r.get("record_id")]
+        rid = (acc[0].get("record_id") if acc else None) or (ups[0]["record_id"] if ups else "not logged")
         out.append(("gateway log", "PASS" if acc else "FAIL",
-                    f"received {len(hit)}x, accepted {len(acc)}x" + (f", record_id {acc[0]['record_id']}" if acc else "")))
+                    f"received {len(hit)}x, accepted {len(acc)}x" + (f", record_id {rid}" if acc else "")))
     rec = find_cloud(cloud_url, source, seq) if cloud_url else None
     if not cloud_url:
         out.append(("cloud record", "NOT CHECKED", "no --cloud given"))
