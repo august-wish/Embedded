@@ -1,6 +1,27 @@
 import assert from "node:assert/strict";
 import worker from "../dist/server/index.js";
 
+// Match the production Worker's PBKDF2 ceiling so account creation cannot
+// pass locally and then fail with a 500 after deployment.
+const nativeCrypto = globalThis.crypto;
+let pbkdf2Calls = 0;
+Object.defineProperty(globalThis, "crypto", {
+  configurable: true,
+  value: {
+    getRandomValues: nativeCrypto.getRandomValues.bind(nativeCrypto),
+    randomUUID: nativeCrypto.randomUUID.bind(nativeCrypto),
+    subtle: {
+      importKey: nativeCrypto.subtle.importKey.bind(nativeCrypto.subtle),
+      digest: nativeCrypto.subtle.digest.bind(nativeCrypto.subtle),
+      deriveBits: (algorithm, key, length) => {
+        assert.ok(algorithm.iterations <= 100_000, "Cloudflare PBKDF2 supports at most 100,000 iterations per call");
+        pbkdf2Calls += 1;
+        return nativeCrypto.subtle.deriveBits(algorithm, key, length);
+      },
+    },
+  },
+});
+
 const authUsers = new Map();
 const authSessions = new Map();
 const loginLimits = new Map();
@@ -98,6 +119,7 @@ const claim = await request("/auth/claim", {
   method: "POST", headers: { ...authHeaders, origin: "https://smart-cane.test", "content-type": "application/x-www-form-urlencoded" }, body: claimBody,
 });
 assert.equal(claim.status, 303);
+assert.equal(pbkdf2Calls, 6);
 assert.equal(claim.headers.get("location"), "/app");
 assert.match(claim.headers.get("set-cookie"), /Secure; HttpOnly; SameSite=Strict/);
 assert.equal((await request("/setup", { headers: authHeaders })).headers.get("location"), "/");
@@ -218,6 +240,7 @@ const badLogin = await request("/auth/login", { method: "POST", headers: { origi
 assert.equal(badLogin.headers.get("location"), "/?error=invalid");
 const goodLogin = await request("/auth/login", { method: "POST", headers: { origin: "https://smart-cane.test", "content-type": "application/x-www-form-urlencoded" }, body: new URLSearchParams({ email: "pim@example.com", password: "correct horse battery staple" }) });
 assert.equal(goodLogin.status, 303);
+assert.equal(pbkdf2Calls, 18);
 assert.match(goodLogin.headers.get("set-cookie"), /__Host-smartcane_session=/);
 const logout = await request("/auth/logout", { method: "POST", headers: { ...cookieHeaders, origin: "https://smart-cane.test" } });
 assert.equal(logout.status, 303);

@@ -9,6 +9,7 @@ const FRESH_AFTER_MS = 30_000;
 const OFFLINE_AFTER_MS = 90_000;
 const GPS_CURRENT_AFTER_MS = 90_000;
 const PASSWORD_ITERATIONS = 600_000;
+const MAX_PBKDF2_ITERATIONS_PER_CALL = 100_000;
 const SESSION_MAX_AGE_S = 7 * 24 * 60 * 60;
 const SESSION_COOKIE = "__Host-smartcane_session";
 
@@ -65,8 +66,22 @@ function constantTimeEqual(left, right) {
 }
 
 async function passwordHash(password, salt, iterations = PASSWORD_ITERATIONS) {
-  const key = await crypto.subtle.importKey("raw", new TextEncoder().encode(password), "PBKDF2", false, ["deriveBits"]);
-  return new Uint8Array(await crypto.subtle.deriveBits({ name: "PBKDF2", salt, iterations, hash: "SHA-256" }, key, 256));
+  // The hosting runtime limits a single PBKDF2 call to 100,000 iterations.
+  // Chain six salted calls to retain the intended 600,000-iteration work factor.
+  if (!Number.isInteger(iterations) || iterations < MAX_PBKDF2_ITERATIONS_PER_CALL || iterations % MAX_PBKDF2_ITERATIONS_PER_CALL !== 0) {
+    throw new Error("Unsupported password hash work factor");
+  }
+  let input = new TextEncoder().encode(password);
+  for (let round = 0; round < iterations / MAX_PBKDF2_ITERATIONS_PER_CALL; round += 1) {
+    const roundSalt = new Uint8Array(salt.length + 4);
+    roundSalt.set(salt);
+    new DataView(roundSalt.buffer).setUint32(salt.length, round);
+    const key = await crypto.subtle.importKey("raw", input, "PBKDF2", false, ["deriveBits"]);
+    input = new Uint8Array(await crypto.subtle.deriveBits({
+      name: "PBKDF2", salt: roundSalt, iterations: MAX_PBKDF2_ITERATIONS_PER_CALL, hash: "SHA-256",
+    }, key, 256));
+  }
+  return input;
 }
 
 async function sha256(value) {
