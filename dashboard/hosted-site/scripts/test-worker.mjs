@@ -129,7 +129,7 @@ const protectedApp = await request("/app", { headers: cookieHeaders });
 assert.equal(protectedApp.status, 200);
 const appText = await protectedApp.text();
 assert.match(appText, /id="root"/);
-assert.match(appText, /app\.js\?v=20261115-alert-layout/);
+assert.match(appText, /app\.js\?v=20261115-event-status-nav/);
 
 const appScript = await request("/app.js");
 assert.equal(appScript.status, 200);

@@ -187,3 +187,37 @@ body{font-size:16px}
 #page-overview > .emergency-banner,#page-overview > .caution-banner{position:relative;width:100%;min-height:0;margin:18px 0;z-index:auto}
 #page-overview > .emergency-banner[hidden],#page-overview > .caution-banner[hidden]{display:none}
 @media(max-width:560px){#page-overview > .emergency-banner,#page-overview > .caution-banner{padding:16px;gap:12px}}
+
+/* Full-width dashboard with two primary views in the header. */
+.main-shell{margin-left:0;width:100%}
+.topbar{height:auto;min-height:0;padding:0 clamp(18px,3vw,48px);display:flex;flex-direction:column;align-items:stretch;justify-content:initial}
+.topbar-row{min-height:80px;display:flex;align-items:center;justify-content:space-between;gap:24px}
+.topbar-left{min-width:0}.topbar-left .brand-mark{flex:none;width:44px;height:44px}.topbar-left .brand-mark svg{width:27px;height:27px}
+.topbar-right{gap:clamp(10px,1.4vw,20px)}
+.header-nav{height:52px;display:flex;align-items:stretch;gap:12px;border-top:1px solid #e8edf0}
+.header-nav-item{display:inline-flex;align-items:center;gap:9px;position:relative;padding:0 17px;border:0;background:transparent;color:#637588;font-size:15px;font-weight:600;white-space:nowrap}
+.header-nav-item svg{width:19px;height:19px}
+.header-nav-item:hover,.header-nav-item.active{color:#173451}
+.header-nav-item.active:after{content:"";position:absolute;bottom:0;left:12px;right:12px;height:3px;border-radius:3px 3px 0 0;background:#199d71}
+.header-nav-item .nav-count{margin-left:3px}
+.header-signout{padding:9px 12px;border:1px solid #dce5ea;border-radius:10px;background:#fff;color:#405a70;font-size:13px;font-weight:600;white-space:nowrap}
+.header-signout:hover{background:#f2f7f7}
+main{max-width:1680px}
+
+/* The summary icon and palette follow the actual safety state. */
+.overview-hero .safety-card.state-safe{background:rgba(255,255,255,.94);border-color:#d7e2e2}
+.overview-hero .safety-card.state-safe .safety-status-icon{background:#dcefe4;color:#247b56}
+.overview-hero .safety-card.state-safe .safety-main h3{color:#24774d}
+.overview-hero .safety-card.state-warning{background:rgba(255,250,239,.97);border-color:#edcf8b}
+.overview-hero .safety-card.state-warning .safety-status-icon{background:#fff0d2;color:#a7660b}
+.overview-hero .safety-card.state-warning .safety-main h3{color:#94600c}
+.overview-hero .safety-card.state-emergency{background:rgba(255,247,248,.97);border-color:#eeb1b8}
+.overview-hero .safety-card.state-emergency .safety-status-icon{background:#ffe0e4;color:#cf3341}
+.overview-hero .safety-card.state-emergency .safety-main h3{color:#b72132}
+.overview-hero .safety-card.state-offline{background:rgba(246,248,249,.97);border-color:#d6dfe3}
+.overview-hero .safety-card.state-offline .safety-status-icon{background:#e6ebee;color:#63717c}
+.overview-hero .safety-card.state-offline .safety-main h3{color:#52616c}
+.safety-card:not(.state-safe) .pulse-ring{display:none}
+
+@media(max-width:820px){.header-nav{display:none}.topbar{padding:0 18px}.topbar-row{min-height:70px}.topbar .last-sync{display:none}}
+@media(max-width:560px){.topbar{padding:0 14px}.topbar-row{display:grid;grid-template-columns:minmax(0,1fr);gap:8px;padding:10px 0}.topbar-left .brand-mark{width:38px;height:38px}.topbar-left .brand-mark svg{width:24px;height:24px}.topbar-left .eyebrow{display:block;font-size:9px}.topbar h1{font-size:20px}.topbar-right{width:100%;justify-content:flex-end;gap:9px}.topbar .person-control{margin-right:auto;max-width:160px}.topbar .person-control select{max-width:128px;font-size:12px}.topbar .sync-status{display:none}.header-signout{padding:8px;font-size:11px}}

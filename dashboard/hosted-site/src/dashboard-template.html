@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=20261115-alert-layout">
+  <link rel="stylesheet" href="styles.css?v=20261115-event-status-nav">
 </head>
 <body>
   <svg class="svg-sprite" aria-hidden="true">
@@ -39,38 +39,29 @@
   </svg>
 
   <div class="app-shell">
-    <aside class="sidebar" id="sidebar">
-      <div class="brand">
-        <div class="brand-mark"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M9 26V12c0-4 3-7 7-7h5c2.8 0 5 2.2 5 5s-2.2 5-5 5h-3" stroke="currentColor" stroke-width="4.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-        <div><strong>Smart Cane</strong><span>Caregiver monitoring</span></div>
-      </div>
-      <nav class="primary-nav" aria-label="Primary navigation">
-        <button class="nav-item active" data-page="overview"><svg><use href="#i-grid"/></svg><span>Overview</span></button>
-        <button class="nav-item" data-page="alerts"><svg><use href="#i-alert"/></svg><span>Emergency alerts</span><span class="nav-count" id="navAlertCount">0</span></button>
-      </nav>
-      <div class="sidebar-footer">
-        <div class="caregiver-avatar" id="caregiverInitials">PC</div>
-        <div><strong id="caregiverName">Caregiver</strong><span id="caregiverEmail">Signed in securely</span></div>
-        <button class="signout-link" id="logoutButton" type="button" aria-label="Sign out">ออก</button>
-      </div>
-    </aside>
-
     <div class="main-shell">
       <header class="topbar">
-        <div class="topbar-left">
-          <button class="icon-button mobile-menu" id="menuButton" aria-label="Open menu"><svg><use href="#i-menu"/></svg></button>
-          <div><span class="eyebrow">CAREGIVER DASHBOARD</span><h1 id="pageTitle">Safety overview</h1></div>
-        </div>
-        <div class="topbar-right">
-          <div class="person-control">
-            <label for="personSelect">Monitoring</label>
-            <select id="personSelect" aria-label="เลือกผู้ที่อยู่ในการดูแล"></select>
-            <button class="add-person-button" id="managePeopleButton" aria-label="เพิ่มผู้ที่อยู่ในการดูแล">+</button>
+        <div class="topbar-row">
+          <div class="topbar-left">
+            <div class="brand-mark"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M9 26V12c0-4 3-7 7-7h5c2.8 0 5 2.2 5 5s-2.2 5-5 5h-3" stroke="currentColor" stroke-width="4.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div><span class="eyebrow">SMART CANE · CAREGIVER</span><h1 id="pageTitle">Safety overview</h1></div>
           </div>
-          <div class="sync-status"><span class="connection-dot"></span><div><strong id="headerConnection">Live</strong><span id="syncTime">Synced just now</span></div></div>
-          <div class="last-sync"><span>Last sync</span><strong id="lastSyncTop">Waiting for data</strong></div>
-          <button class="icon-button bell-button" id="bellButton" aria-label="Notifications"><svg><use href="#i-bell"/></svg><span class="notification-dot" id="notificationDot" hidden></span></button>
+          <div class="topbar-right">
+            <div class="person-control">
+              <label for="personSelect">Monitoring</label>
+              <select id="personSelect" aria-label="เลือกผู้ที่อยู่ในการดูแล"></select>
+              <button class="add-person-button" id="managePeopleButton" aria-label="เพิ่มผู้ที่อยู่ในการดูแล">+</button>
+            </div>
+            <div class="sync-status"><span class="connection-dot"></span><div><strong id="headerConnection">Live</strong><span id="syncTime">Synced just now</span></div></div>
+            <div class="last-sync"><span>Last sync</span><strong id="lastSyncTop">Waiting for data</strong></div>
+            <button class="icon-button bell-button" id="bellButton" aria-label="Notifications"><svg><use href="#i-bell"/></svg><span class="notification-dot" id="notificationDot" hidden></span></button>
+            <button class="header-signout" id="logoutButton" type="button">ออกจากระบบ</button>
+          </div>
         </div>
+        <nav class="header-nav" aria-label="Primary navigation">
+          <button class="header-nav-item active" data-page="overview"><svg><use href="#i-grid"/></svg><span>Overview</span></button>
+          <button class="header-nav-item" data-page="alerts"><svg><use href="#i-alert"/></svg><span>Emergency alerts</span><span class="nav-count" id="navAlertCount">0</span></button>
+        </nav>
       </header>
 
       <main>
@@ -85,7 +76,7 @@
 
           <article class="safety-card state-safe" id="safetyCard">
             <div class="safety-main">
-              <div class="safety-status-icon"><svg><use href="#i-shield"/></svg><span class="pulse-ring"></span></div>
+              <div class="safety-status-icon" id="safetyStatusIcon"><svg><use href="#i-shield"/></svg><span class="pulse-ring"></span></div>
               <div><span class="label">SAFETY SUMMARY</span><h3 id="safetyStatus">No active safety alerts</h3><p id="safetyMessage">Somchai is safe and being monitored normally.</p></div>
             </div>
             <div class="safety-meta">

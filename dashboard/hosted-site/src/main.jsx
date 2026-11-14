@@ -93,7 +93,6 @@ function App() {
   const [scenario, setScenario] = useState('normal');
   const [liveData, setLiveData] = useState(emptyLive);
   const [page, setPage] = useState('overview');
-  const [menuOpen, setMenuOpen] = useState(false);
   const [alertModal, setAlertModal] = useState(false);
   const [peopleModal, setPeopleModal] = useState(false);
   const [acknowledged, setAcknowledged] = useState(false);
@@ -127,7 +126,6 @@ function App() {
     return () => { active = false; };
   }, []);
   useEffect(() => { document.title = `${person.display_name} — Smart Cane Care`; }, [person.display_name]);
-  useEffect(() => { document.body.classList.toggle('menu-open', menuOpen); return () => document.body.classList.remove('menu-open'); }, [menuOpen]);
   useEffect(() => { document.body.style.overflow = alertModal || peopleModal ? 'hidden' : ''; return () => { document.body.style.overflow = ''; }; }, [alertModal, peopleModal]);
   useEffect(() => {
     if (scenario !== 'live') return;
@@ -151,7 +149,7 @@ function App() {
     const timer = setTimeout(() => setToast(''), 4200);
     return () => clearTimeout(timer);
   }, [toast]);
-  function navigate(next) { setPage(next); setMenuOpen(false); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+  function navigate(next) { setPage(next); window.scrollTo({ top: 0, behavior: 'smooth' }); }
   async function acknowledge() {
     if (scenario === 'live' && data.alertId) {
       try {
@@ -207,6 +205,7 @@ function App() {
     if (id === 'personSelect') return <select id={id} aria-label="เลือกผู้ที่อยู่ในการดูแล" value={personId} onChange={(event) => setPersonId(event.target.value)}>{(people.length ? people : [initialPerson]).map((item) => <option key={item.device_id} value={item.device_id}>{item.display_name}</option>)}</select>;
     if (id === 'scenarioSelect') return <select id={id} value={scenario} onChange={(event) => { setScenario(event.target.value); setAcknowledged(false); }}>{Object.entries(scenarioLabels).map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select>;
     if (id === 'safetyCard') return render({ className: `safety-card state-${data.state}` });
+    if (id === 'safetyStatusIcon') return render({}, <><Icon name={data.state === 'safe' ? 'shield' : data.state === 'offline' ? 'wifi' : 'alert'} /><span className="pulse-ring" /></>);
     if (id === 'emergencyBanner') return render({ hidden: !data.emergency });
     if (id === 'cautionBanner') return render({ hidden: !(data.state === 'warning' && (highHeart || lowLight)) });
     if (id === 'heartCard' || id === 'lightCard') return render({ className: `metric-card ${data.state === 'offline' ? 'stale' : ''} ${(id === 'heartCard' && highHeart) || (id === 'lightCard' && lowLight) ? 'warning-metric' : ''}` });
@@ -221,7 +220,6 @@ function App() {
     if (id === 'alertModal' || id === 'peopleModal') return render({ hidden: id === 'alertModal' ? !alertModal : !peopleModal, onClick: (event) => { if (event.target === event.currentTarget) id === 'alertModal' ? setAlertModal(false) : setPeopleModal(false); } });
     if (id === 'toast') return render({ hidden: !toast }, <><Icon name="check" /><div><strong>{toast ? toast.split('.')[0] : ''}</strong><span>{toast?.includes('.') ? toast.slice(toast.indexOf('.')+1).trim() : ''}</span></div></>);
     if (id === 'mobileAlertDot' || id === 'notificationDot') return render({ hidden: !alertCount });
-    if (id === 'menuButton') return render({ onClick: () => setMenuOpen((value) => !value) });
     if (id === 'bellButton') return render({ onClick: () => navigate('alerts') });
     if (id === 'managePeopleButton') return render({ onClick: () => setPeopleModal(true) });
     if (id === 'logoutButton') return render({ onClick: logout });
