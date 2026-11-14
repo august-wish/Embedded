@@ -94,3 +94,6 @@ Put files in `docs/integration/evidence/` with this name: `G1_node-to-gateway_20
 So Thiti can capture your board's Serial output as evidence with `tools/serial/capture_serial.py`, please print one simple line per event, for example:
 `TX node=1 seq=125 dist_cm=46.2` (Node) and `RX node=1 seq=125 dist_cm=46.2 ack=accepted` (Gateway).
 Full format: `docs/interface/SERIAL_LOG_FORMAT.md`. Other print lines are fine, they are ignored. If you prefer another format, tell Thiti and the tool will follow it.
+
+## 9. If you use an AI coding agent
+Tell it: **"Read AGENTS.md first."** The file in the repo root gives it the project, lanes and rules. Some tools read it automatically, some (e.g. Claude Code) do not, so say it explicitly. You still start the agent, review its work, and must be able to explain your own code at Q&A. Declare the tool in `docs/report/06_roles_and_ai_declaration.md`.
