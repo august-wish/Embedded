@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "kind": "cloud.telemetry",
+  "record_id": "GW_01:NODE_01:BOOT_1A2B3C4D:125",
+  "gateway_id": "GW_01",
+  "source_id": "NODE_01",
+  "origin_kind": "physical",
+  "source_boot_id": "BOOT_1A2B3C4D",
+  "source_seq": 125,
+  "source_sample_uptime_ms": 128500,
+  "gateway_received_at_utc": null,
+  "gateway_received_uptime_ms": 234500,
+  "readings": {
+    "distance_cm": 46.2,
+    "accel_g": {"x": 0.02, "y": 0.13, "z": 0.98},
+    "gyro_dps": {"x": 1.1, "y": -0.4, "z": 0.6}
+  },
+  "validity": {"distance": true, "motion": true}
+}
