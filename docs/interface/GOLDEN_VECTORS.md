@@ -5,7 +5,7 @@
 **Document version:** v0.1 (10 November 2026, ICT)  
 **Source contract:** `INTERFACE_CONTRACT_team_review_v3.docx` / logical Contract v0.2  
 **Decision status:** **PROPOSED / NOT APPROVED**  
-**Verification status:** **20/20 offline candidate checks PASS; 0 physical integration tests executed**
+**Verification status:** **22/22 offline candidate checks PASS; 0 physical integration tests executed**
 
 ## 1. วัตถุประสงค์และขอบเขต
 
@@ -127,6 +127,8 @@ ACK `accepted`, `duplicate`, `rejected` และกรณี Packet เสี�
 | C04 | Dashboard latest + `unknown_clock` | แยก Ingest Time กับ Sample Time | PASS |
 | C05 | GPS `fix_valid=false` แต่ยังมี Lat/Lon | Reject stale location | PASS |
 | C06 | Distance invalid แต่ `distance_cm=0` | Reject false valid number | PASS |
+| C07 | Dashboard latest ไม่มี `source_seq` (CR-01, 16 Nov) | Reject | PASS |
+| C08 | `source_seq` ติดลบ (CR-01, 16 Nov) | Reject | PASS |
 
 **ขอบเขตของ Validator:** ตรวจรูปแบบข้อมูลและ Consistency เบื้องต้นเท่านั้น; ไม่ตัดสิน Sampling Rate, TTL, Version Negotiation, Replay Buffer Size, Cloud API, GPS Freshness Threshold หรือ AI Confidence Threshold เพราะยังเป็น TBD. สำหรับ C01/C02/C04 เป็นการตรวจ Minimum Candidate Fields ไม่ใช่ Schema ที่ทุกฝ่ายอนุมัติแล้ว
 
@@ -141,7 +143,7 @@ py candidate_validator.py --self-test
 ผลที่ตรวจได้ในวันนี้:
 
 ```text
-20/20 offline candidate checks PASS
+22/22 offline candidate checks PASS
 NOT TESTED: radio, MCU serializers, real Cloud writes,
 Discord delivery, AI/actuator.
 IMPORTANT: little-endian 0x5343 yields bytes 43 53 ('CS'),
@@ -215,7 +217,7 @@ Blocking decision / follow-up owner:
 
 - [x] จัดทำ Verification Matrix ครบ IF-01/IF-01A/IF-02–IF-06 (เอกสารนี้)
 - [x] จัดทำ Golden Hex 34B/21B พร้อม Expected Decoding (เอกสารนี้)
-- [x] สร้างและรัน Offline Candidate Validator (20/20 PASS)
+- [x] สร้างและรัน Offline Candidate Validator (22/22 PASS)
 - [x] ระบุความเสี่ยง Magic/Endian ให้ Owner ตอบใน D-02
 - [ ] ส่งเอกสารให้ Pongsinachai, Chananphat, Udomchok และ Thapanakorn Review เฉพาะ IF ที่เกี่ยวข้อง
 - [ ] รับ AGREE / CHANGE / QUESTION และอัปเดต Test Vectors ตาม Revision ที่ตกลง
@@ -229,4 +231,4 @@ Blocking decision / follow-up owner:
 2. `Embedded System (CEDT) - Final Project 2026.pdf` — M3/M4/M5/M6/M7, II Scalability, E4, Checkpoint 20 Nov, Final 8 Dec
 3. `INTERFACE_CONTRACT.md` และ `INTERFACE_CONTRACT_team_review_v3.docx` — Candidate Contract v0.2 / Team Review, **PROPOSED / NOT APPROVED**
 
-**Change log:** v0.1 (10 Nov 2026) — First architect-owned verification matrix, golden frame fixtures, 20 offline checks and physical-test backlog. **No firmware/cloud/dashboard/AI implementation changed.**
+**Change log:** v0.1 (10 Nov 2026) — First architect-owned verification matrix, golden frame fixtures, 22 offline checks and physical-test backlog. **No firmware/cloud/dashboard/AI implementation changed.**

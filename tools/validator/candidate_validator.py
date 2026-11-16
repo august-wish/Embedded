@@ -140,6 +140,8 @@ def validate_logical(kind: str, obj: dict) -> None:
             require(bool(require_field(obj, key, str)), f"{key} cannot be empty")
         require(require_field(obj, "origin_kind", str) in ("physical", "simulated"), "bad origin_kind")
         require_field(obj, "measurements", dict)
+        # CR-01 (requested by dashboard owner): same seq must be readable at the dashboard.
+        require(require_field(obj, "source_seq", int) >= 0, "source_seq must be a nonnegative integer")
         require(require_field(obj, "freshness", str) in
                 ("fresh", "stale", "offline", "unknown_clock"), "bad candidate freshness state")
         # Timestamp can be null if no trusted UTC; do not fabricate observation time.
@@ -189,7 +191,7 @@ def fixtures() -> tuple[dict, dict, dict, dict]:
     latest = {
         "schema_version": 1, "gateway_id": "GW_01", "source_id": "NODE_01",
         "origin_kind": "physical", "latest_record_id": node["record_id"],
-        "source_boot_id": "BOOT_A1", "source_sample_uptime_ms": 128500,
+        "source_boot_id": "BOOT_A1", "source_seq": 125, "source_sample_uptime_ms": 128500,
         "gateway_received_at_utc": None,
         "cloud_ingested_at_utc": "2026-11-10T07:48:00Z",
         "measurements": {"distance_cm": 46.2}, "freshness": "unknown_clock",
@@ -250,6 +252,13 @@ def run_self_test() -> int:
     bad2 = {**node, "readings": {**node["readings"], "distance_cm": 0},
             "validity": {"distance": False, "motion": True}}
     check("C06 reject invalid distance pretending zero", lambda: validate_logical("cloud.telemetry", bad2), True)
+
+    bad3 = {k: v for k, v in latest.items() if k != "source_seq"}
+    check("C07 reject dashboard latest without source_seq (CR-01)",
+          lambda: validate_logical("dashboard.latest", bad3), True)
+    bad4 = {**latest, "source_seq": -1}
+    check("C08 reject negative source_seq (CR-01)",
+          lambda: validate_logical("dashboard.latest", bad4), True)
 
     print(f"\n{passed}/{passed} offline candidate checks PASS")
     print("NOT TESTED: radio, MCU serializers, real Cloud writes, Discord delivery, AI/actuator.")

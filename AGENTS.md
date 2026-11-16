@@ -39,7 +39,7 @@ Do **not** edit another member's folder. If you think it needs a change, tell yo
 
 ## Useful commands (Python 3.9+, no installs)
 ```text
-py tools/validator/candidate_validator.py --self-test     # 20 format checks (python3 on Mac/Linux)
+py tools/validator/candidate_validator.py --self-test     # 22 format checks (python3 on Mac/Linux)
 py -m unittest discover -s tools/mock -v                  # mock chain tests
 py -m unittest discover -s tools/serial -v                # serial capture tests
 py tools/mock/run_demo.py                                 # fake Node -> Gateway -> Cloud demo

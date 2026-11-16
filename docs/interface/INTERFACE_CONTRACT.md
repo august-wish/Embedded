@@ -311,6 +311,7 @@ Minimum concepts to agree with Cloud and Dashboard owners:
   "source_id": "NODE_01",
   "origin_kind": "physical",
   "latest_record_id": "GW_01:NODE_01:BOOT_A1:125",
+  "source_seq": 125,
   "source_sample_uptime_ms": 128500,
   "source_boot_id": "BOOT_A1",
   "gateway_received_at_utc": null,
@@ -319,6 +320,8 @@ Minimum concepts to agree with Cloud and Dashboard owners:
   "freshness": "unknown_clock"
 }
 ```
+
+`source_seq` (nonnegative integer, same value as IF-03 `source_seq`) is **required** in the read model so the dashboard can show the same `seq` as the Node, Gateway and Cloud (change CR-01, requested by the dashboard owner, 16 Nov 2026).
 
 `freshness` candidates: `fresh`, `stale`, `offline`, `unknown_clock`; the actual thresholds and which component computes them are **TBD**. The example is intentionally **not** an HTTP endpoint specification.
 
@@ -417,6 +420,7 @@ An interface becomes **AGREED** only after the named owners approve the same fie
 | Version | Date | Change | Review |
 |---|---|---|---|
 | v0.1 | 10 Nov 2026 | First **proposed** logical message contract, transport boundaries and review questions | Not approved |
+| v0.2.1 | 16 Nov 2026 | CR-01: IF-04 read-model envelope now requires `source_seq` (requested by dashboard owner; no existing field renamed). Validator, mock and tests updated together | Cloud owner to confirm |
 | v0.2 | 10 Nov 2026 | Self-audit fixes: bounded ESP-NOW wire candidates, radio channel check, Gateway raw sensor payload, timestamp/source rules, AI traceability, alert delivery caveat, approval record | **Pending team review** |
 
 **Sources:** `Embedded System Proposal.pdf` (submitted team proposal and original diagram); `Embedded System (CEDT) - Final Project 2026.pdf` (Section 3 roles; M3–M6; Section II message-format and scalability scoring; E4 reliability; 20 Nov checkpoint); [Espressif ESP-NOW programming guide](https://docs.espressif.com/projects/esp-idf/en/v5.5/esp32/api-reference/network/esp_now.html) (v1/v2 payload limits, channel and send callback behavior). `SYSTEM_ARCHITECTURE.md` is an earlier **draft**, not authority to override the submitted Proposal.
