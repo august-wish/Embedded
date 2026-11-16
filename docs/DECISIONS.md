@@ -6,14 +6,16 @@ Owner: Thiti Wanganuttara (System Architect & Integration). One row per decision
 
 Status values: `OPEN` (not decided) · `NO OBJECTION` (baseline in use, not confirmed) · `AGREED` (both owners confirmed, with date) · `CHANGED` (new value agreed) · `DEFERRED`.
 
+**Sources of schedule/tests:** the PM keeps the schedule and the formal test plan (T01–T18) in the shared Google Sheet. The decision IDs below (D-01 to D-10) are referenced there.
+
 ## Open decisions
 
 | ID | Priority | Decision | Owners | Baseline in use | Status | Date / by |
 |---|---|---|---|---|---|---|
 | D-01 | P0 | Exact Gateway board (ESP32-S3 vs ESP32-CAM), PSRAM, free GPIO. Audio part: DFPlayer (proposal) vs MAX98357 (BOM) | Chananphat + hardware buyer | Proposal: ESP32-S3 + DFPlayer | OPEN | |
 | D-02 | P0 | Packet format: 34-byte telemetry + 21-byte ACK, little-endian, magic `0x5343` (bytes `43 53`). Or a simpler text/JSON packet for the checkpoint | Pongsinachai + Chananphat | 34 B / 21 B binary | NO OBJECTION | 14 Nov, Thiti |
-| D-03 | P0 | Sample rate, ACK timeout, retries, backoff, stale limit, buffer size | Pongsinachai + Chananphat | Mock defaults: ACK 0.3 s, 3 retries, stale 10 s, offline 60 s, buffer 1000 | OPEN | |
-| D-04 | P0 | Cloud platform, protocol, auth, schema, read API for the Dashboard | Chananphat + Udomchok | Mock API in `tools/mock/` (not real) | OPEN | |
+| D-03 | P0 | Sample rate, ACK timeout, retries, backoff, stale limit, buffer size | Pongsinachai + Chananphat | Mock defaults: ACK 0.3 s, 3 retries, stale 10 s, offline 60 s, buffer 1000. Boom's Worker uses fresh 30 s, stale 90 s | OPEN | |
+| D-04 | P0 | Cloud platform, protocol, auth, schema, read API for the Dashboard | Chananphat + Udomchok | Candidates: Boom's Cloudflare Worker + D1 in `dashboard/hosted-site/` (POST needs `device_id` + Bearer token, answers 202; not in contract yet) or Firebase (PM sheet). Mock API in `tools/mock/` is not real | OPEN. PM task PM-04, due 16 Nov | |
 | D-05 | High | Discord alert: Gateway calls webhook directly or via relay; where the secret is stored | Chananphat + Udomchok | Proposal diagram: Gateway → Wi-Fi → Discord | OPEN | |
 | D-06 | High | UTC time source, GPS valid/stale rule, event de-duplication | Chananphat + Udomchok | `gateway_received_at_utc = null` when no clock; cloud adds `cloud_ingested_at_utc` | NO OBJECTION | 14 Nov, Thiti |
 | D-07 | High | What "AI decision" and "suspected fall" mean (a cane sensor can't prove a person fell) | Chananphat + PM | Use wording "suspected fall / cane drop" | OPEN | |
@@ -49,6 +51,6 @@ Evidence re-run (date, path):
 
 | CR | Date | Interface / field | Old → New | Requested by | Status |
 |---|---|---|---|---|---|
-| – | – | – | – | – | – |
+| CR-01 | 16 Nov 2026 | IF-04 read model: `source_seq` | absent from minimum envelope → **required nonnegative integer** | Boom (dashboard owner) | APPLIED to contract v0.2.1, validator (22 checks), mock. Cloud owner (Peem) to confirm |
 
 Rule: change the validator first (the mocks import it), then the docs, then run `py tools/validator/candidate_validator.py --self-test` and `py -m unittest discover -s tools/mock`.
