@@ -51,6 +51,7 @@ Evidence re-run (date, path):
 
 | CR | Date | Interface / field | Old → New | Requested by | Status |
 |---|---|---|---|---|---|
+| CR-02 | 16 Nov 2026 | IF-03 upload shape vs hosted Worker: `device_id` required, distance read from `readings.hc_sr04`, motion in m/s² | Worker should accept the contract shape (4 changes listed in evidence F-01) | Thiti (proposal) | PROPOSED, waiting for Boom + Peem. Evidence: `docs/integration/evidence/F01_worker-vs-contract_2026-11-16.md`, probe `tools/compat/probe_worker_contract.mjs` (2/6 pass) |
 | CR-01 | 16 Nov 2026 | IF-04 read model: `source_seq` | absent from minimum envelope → **required nonnegative integer** | Boom (dashboard owner) | APPLIED to contract v0.2.1, validator (22 checks), mock. Cloud owner (Peem) to confirm |
 
 Rule: change the validator first (the mocks import it), then the docs, then run `py tools/validator/candidate_validator.py --self-test` and `py -m unittest discover -s tools/mock`.
