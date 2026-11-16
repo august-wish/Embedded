@@ -4,7 +4,7 @@ const setupPage = "__SMART_CANE_SETUP__";
 const styles = "__SMART_CANE_CSS__";
 const appScript = "__SMART_CANE_JS__";
 
-const CONTRACT_VERSION = "0.2";
+const CONTRACT_VERSION = "0.2.1";
 const FRESH_AFTER_MS = 30_000;
 const OFFLINE_AFTER_MS = 90_000;
 const GPS_CURRENT_AFTER_MS = 90_000;
@@ -280,14 +280,17 @@ function allowedValue(value, choices, fallback) {
 }
 
 function normalizeTelemetry(input) {
-  const deviceId = cleanText(input.device_id, null, 64);
+  const deviceId = cleanText(input.device_id ?? input.gateway_id, null, 64);
   if (!deviceId || !/^[A-Za-z0-9_-]+$/.test(deviceId)) {
-    return { error: "device_id is required and may contain only letters, numbers, _ and -" };
+    return { error: "device_id or gateway_id is required and may contain only letters, numbers, _ and -" };
   }
 
   const readings = input.readings ?? {};
   const ultrasonic = readings.hc_sr04 ?? readings.ultrasonic ?? {};
   const motion = readings.mpu6050 ?? {};
+  const validity = input.validity ?? {};
+  const accelG = readings.accel_g ?? {};
+  const gyroDps = readings.gyro_dps ?? {};
   const pulse = readings.max30102 ?? {};
   const gps = readings.gps ?? input.gps ?? {};
   const light = readings.ldr ?? {};
@@ -301,7 +304,17 @@ function normalizeTelemetry(input) {
   const longitude = finiteNumber(gps.lon_deg ?? gps.longitude ?? input.longitude, { min: -180, max: 180 });
   const gpsAccuracy = finiteNumber(gps.accuracy_m ?? gps.accuracy ?? input.gps_accuracy, { min: 0, max: 10000 });
   const gpsValid = validFor(latitude !== null && longitude !== null ? true : null, gps.fix_valid ?? gps.valid);
-  const mpuValues = [motion.accel_x_mps2, motion.accel_y_mps2, motion.accel_z_mps2, motion.gyro_x_dps, motion.gyro_y_dps, motion.gyro_z_dps];
+  // D1 keeps acceleration in m/s²; the contract sends acceleration in g.
+  const acceleration = ["x", "y", "z"].map((axis) => {
+    const legacy = finiteNumber(motion[`accel_${axis}_mps2`]);
+    const g = finiteNumber(accelG[axis]);
+    return legacy ?? (g === null ? null : g * 9.80665);
+  });
+  const rotation = ["x", "y", "z"].map((axis) => finiteNumber(motion[`gyro_${axis}_dps`] ?? gyroDps[axis]));
+  const distance = finiteNumber(readings.distance_cm ?? ultrasonic.distance_cm, { min: 0, max: 1000 });
+  const ultrasonicValid = distance !== null && validFor(distance, validity.distance ?? ultrasonic.valid) ? 1 : 0;
+  const motionValid = [...acceleration, ...rotation].some((value) => value !== null)
+    && validFor(true, validity.motion ?? motion.valid) ? 1 : 0;
   const delayedUpload = input.delayed_upload !== undefined
     ? booleanInt(input.delayed_upload)
     : sourceSampleAt && Date.parse(now) - Date.parse(sourceSampleAt) > FRESH_AFTER_MS ? 1 : 0;
@@ -309,7 +322,7 @@ function normalizeTelemetry(input) {
   return {
     value: {
       schemaVersion: cleanText(input.schema_version, "0.1-legacy", 20),
-      kind: "telemetry",
+      kind: allowedValue(input.kind, ["cloud.telemetry", "cloud.gateway_telemetry", "telemetry"], "telemetry"),
       recordId: stableId(input.record_id, "legacy-record"),
       deviceId,
       deviceName: cleanText(input.device_name, "Smart Cane", 80),
@@ -324,15 +337,15 @@ function normalizeTelemetry(input) {
       gatewayReceivedUptimeMs: finiteNumber(input.gateway_received_uptime_ms, { min: 0, max: Number.MAX_SAFE_INTEGER, integer: true }),
       cloudIngestedAt: now,
       delayedUpload,
-      distanceCm: finiteNumber(ultrasonic.distance_cm, { min: 0, max: 1000 }),
-      ultrasonicValid: validFor(ultrasonic.distance_cm, ultrasonic.valid),
-      accelX: finiteNumber(motion.accel_x_mps2),
-      accelY: finiteNumber(motion.accel_y_mps2),
-      accelZ: finiteNumber(motion.accel_z_mps2),
-      gyroX: finiteNumber(motion.gyro_x_dps),
-      gyroY: finiteNumber(motion.gyro_y_dps),
-      gyroZ: finiteNumber(motion.gyro_z_dps),
-      motionValid: validFor(mpuValues.some((value) => value !== null && value !== undefined) ? true : null, motion.valid),
+      distanceCm: ultrasonicValid ? distance : null,
+      ultrasonicValid,
+      accelX: motionValid ? acceleration[0] : null,
+      accelY: motionValid ? acceleration[1] : null,
+      accelZ: motionValid ? acceleration[2] : null,
+      gyroX: motionValid ? rotation[0] : null,
+      gyroY: motionValid ? rotation[1] : null,
+      gyroZ: motionValid ? rotation[2] : null,
+      motionValid,
       heartRate,
       irRaw: finiteNumber(pulse.ir_raw, { min: 0, max: Number.MAX_SAFE_INTEGER, integer: true }),
       redRaw: finiteNumber(pulse.red_raw, { min: 0, max: Number.MAX_SAFE_INTEGER, integer: true }),

@@ -142,7 +142,7 @@ const health = await request("/api/health");
 assert.equal(health.status, 200);
 const healthBody = await health.json();
 assert.equal(healthBody.database, "connected");
-assert.equal(healthBody.interface_contract, "0.2");
+assert.equal(healthBody.interface_contract, "0.2.1");
 
 assert.equal((await request("/api/session", { headers: authHeaders })).status, 401);
 const session = await request("/api/session", { headers: cookieHeaders });
@@ -193,6 +193,21 @@ assert.equal(telemetry.status, 202);
 const telemetryBody = await telemetry.json();
 assert.equal(telemetryBody.ok, true);
 assert.equal(telemetryBody.record_id, "boot-01:telemetry:42");
+
+const contractRecord = {
+  schema_version: 1, kind: "cloud.telemetry", record_id: "GW_01:NODE_01:BOOT_A1:125",
+  gateway_id: "GW_01", source_id: "NODE_01", source_boot_id: "BOOT_A1",
+  source_seq: 125, source_sample_uptime_ms: 128500, origin_kind: "physical",
+  readings: { distance_cm: 46.2, accel_g: { x: 0.02 }, gyro_dps: { x: 1.1 } },
+  validity: { distance: true, motion: true },
+};
+const contractUpload = await request("/api/telemetry", {
+  method: "POST",
+  headers: { authorization: "Bearer test-gateway-token", "content-type": "application/json" },
+  body: JSON.stringify(contractRecord),
+});
+assert.equal(contractUpload.status, 202);
+assert.equal((await contractUpload.json()).record_id, contractRecord.record_id);
 
 const telemetryHistory = await request("/api/telemetry/history?device_id=SC-ESP32-001&limit=20", { headers: cookieHeaders });
 assert.equal(telemetryHistory.status, 200);

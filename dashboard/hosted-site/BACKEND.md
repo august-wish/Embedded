@@ -2,7 +2,7 @@
 
 The caregiver dashboard is rendered by React 19. Its UI source is in `src/main.jsx`; `src/dashboard-template.html` retains the existing layout and SVG assets while React owns the rendered tree, state, navigation, forms, and API polling. `npm run build` bundles React into `dist/app.js` and then embeds the dashboard assets into the Cloudflare Worker. The API and D1 schema remain unchanged.
 
-The hosted Site includes a Cloudflare Worker API and D1 database implementing the proposed Interface Contract v0.2 for IF-03, IF-04, and the Dashboard side of IF-05.
+The hosted Site includes a Cloudflare Worker API and D1 database implementing the proposed Interface Contract v0.2.1 for IF-03, IF-04, and the Dashboard side of IF-05.
 
 ## Caregiver login
 
@@ -28,15 +28,17 @@ Caregiver read routes require the D1 session and enforce the caregiver-to-recipi
 
 The Worker protects write routes with the runtime `GATEWAY_WRITE_TOKEN`. The ESP32 Gateway sends it in the `Authorization` header. Keep that credential outside Git.
 
-Each telemetry upload should include:
+The Worker accepts both the IF-03 contract record and the older nested sensor shape. Each telemetry upload should include:
 
 - `schema_version`, `kind`, and stable `record_id`
-- `device_id`, `gateway_id`, `source_id`, `origin_kind`, and `source_boot_id`
+- `gateway_id`, `source_id`, `origin_kind`, and `source_boot_id`; `device_id` is optional and defaults to `gateway_id`
 - sequence/uptime and distinct sample, Gateway-receipt, and Cloud-ingestion time references
-- `readings` for HC-SR04, MPU6050, MAX30102, GPS, LDR, and AI, each with explicit validity
+- IF-03 `readings.distance_cm`, `readings.accel_g`, `readings.gyro_dps`, and top-level `validity`; nested `readings.hc_sr04` and `readings.mpu6050` remain accepted
 - engineering units encoded in field names and returned explicitly by the read API
 
-See `scripts/send-test-telemetry.mjs` and `firmware/esp32_gateway_example.ino` for complete payloads.
+Contract acceleration in g is converted to m/s² for the existing D1 columns and read API. Invalid or missing sensor values are stored as null. The Worker returns HTTP 202 for a new record and 200 for a duplicate; Gateway should treat any 2xx response as success. The dashboard only displays a device after the caregiver links its effective device ID (the `gateway_id` for contract records).
+
+See `tools/compat/contract_record.json` in the team repo for the IF-03 payload example.
 
 Stable `record_id` and `event_id` values make retries idempotent. Physical and simulated sources remain distinct. Missing or invalid sensor readings are returned as invalid, never as zero.
 
