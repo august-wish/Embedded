@@ -545,9 +545,14 @@ async function latestTelemetry(env, deviceId) {
     ORDER BY COALESCE(cloud_ingested_at_utc, recorded_at) DESC, id DESC LIMIT 1`).bind(deviceId).first();
 }
 
+async function latestNodeTelemetry(env, deviceId) {
+  return env.DB.prepare(`SELECT * FROM telemetry_readings WHERE device_id = ? AND source_id != gateway_id
+    ORDER BY COALESCE(cloud_ingested_at_utc, recorded_at) DESC, id DESC LIMIT 1`).bind(deviceId).first();
+}
+
 async function dashboardData(env, deviceId) {
-  const [device, latest, alerts, events, sources] = await Promise.all([
-    env.DB.prepare("SELECT * FROM devices WHERE id = ?").bind(deviceId).first(), latestTelemetry(env, deviceId),
+  const [device, latest, nodeLatest, alerts, events, sources] = await Promise.all([
+    env.DB.prepare("SELECT * FROM devices WHERE id = ?").bind(deviceId).first(), latestTelemetry(env, deviceId), latestNodeTelemetry(env, deviceId),
     env.DB.prepare(`SELECT * FROM alerts WHERE device_id = ? AND acknowledged = 0 ORDER BY event_timestamp DESC LIMIT 10`).bind(deviceId).all(),
     env.DB.prepare(`SELECT * FROM events WHERE device_id = ? ORDER BY occurred_at DESC LIMIT 20`).bind(deviceId).all(),
     env.DB.prepare(`SELECT source_id, gateway_id, origin_kind, MAX(COALESCE(cloud_ingested_at_utc, recorded_at)) AS last_seen
@@ -557,7 +562,8 @@ async function dashboardData(env, deviceId) {
   const freshness = freshnessState(referenceTime);
   return {
     contract: { schema_version: CONTRACT_VERSION, fresh_after_ms: FRESH_AFTER_MS, offline_after_ms: OFFLINE_AFTER_MS, gps_current_after_ms: GPS_CURRENT_AFTER_MS },
-    device: device || null, latest: telemetryRecord(latest),
+    device: device || null, latest: telemetryRecord(latest), node_latest: telemetryRecord(nodeLatest),
+    node_freshness: freshnessState(nodeLatest?.cloud_ingested_at_utc || nodeLatest?.recorded_at).state,
     connection: freshness.state === "offline" || freshness.state === "unknown_clock" ? "offline" : "online",
     freshness: freshness.state,
     stale_seconds: freshness.age_ms === null ? null : Math.round(freshness.age_ms / 1000),

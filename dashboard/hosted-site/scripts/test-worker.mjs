@@ -25,6 +25,8 @@ Object.defineProperty(globalThis, "crypto", {
 const authUsers = new Map();
 const authSessions = new Map();
 const loginLimits = new Map();
+let latestRow = null;
+let nodeRow = null;
 
 class Statement {
   constructor(sql) { this.sql = sql; this.values = []; }
@@ -39,7 +41,7 @@ class Statement {
     }
     if (this.sql.includes("SELECT attempts FROM auth_login_limits")) return loginLimits.get(this.values[0]) || null;
     if (this.sql.includes("SELECT * FROM devices")) return null;
-    if (this.sql.includes("SELECT * FROM telemetry_readings")) return null;
+    if (this.sql.includes("SELECT * FROM telemetry_readings")) return this.sql.includes("source_id != gateway_id") ? nodeRow : latestRow;
     if (this.sql.includes("SELECT id FROM telemetry_readings")) return null;
     if (this.sql.includes("SELECT id FROM events")) return null;
     if (this.sql.includes("SELECT id FROM care_recipients")) return { id: 1 };
@@ -129,7 +131,7 @@ const protectedApp = await request("/app", { headers: cookieHeaders });
 assert.equal(protectedApp.status, 200);
 const appText = await protectedApp.text();
 assert.match(appText, /id="root"/);
-assert.match(appText, /app\.js\?v=20261115-event-status-nav/);
+assert.match(appText, /app\.js\?v=20261123-live-node/);
 
 const appScript = await request("/app.js");
 assert.equal(appScript.status, 200);
@@ -208,6 +210,20 @@ const contractUpload = await request("/api/telemetry", {
 });
 assert.equal(contractUpload.status, 202);
 assert.equal((await contractUpload.json()).record_id, contractRecord.record_id);
+
+const ingestedAt = new Date().toISOString();
+latestRow = { device_id: "SC-ESP32-001", gateway_id: "GW_01", source_id: "GW_01", source_seq: 126, cloud_ingested_at_utc: ingestedAt };
+nodeRow = { device_id: "SC-ESP32-001", gateway_id: "GW_01", source_id: "NODE_01", source_seq: 125,
+  hc_sr04_distance_cm: 46.2, hc_sr04_valid: 1, cloud_ingested_at_utc: ingestedAt };
+const combinedDashboard = await request("/api/dashboard?device_id=SC-ESP32-001", { headers: cookieHeaders });
+assert.equal(combinedDashboard.status, 200);
+const combinedData = await combinedDashboard.json();
+assert.equal(combinedData.latest.source_id, "GW_01");
+assert.equal(combinedData.node_latest.source_seq, 125);
+assert.equal(combinedData.node_latest.readings.hc_sr04.distance_cm, 46.2);
+assert.equal(combinedData.node_freshness, "fresh");
+latestRow = null;
+nodeRow = null;
 
 const telemetryHistory = await request("/api/telemetry/history?device_id=SC-ESP32-001&limit=20", { headers: cookieHeaders });
 assert.equal(telemetryHistory.status, 200);

@@ -21,6 +21,8 @@ Gateway writes require `Authorization: Bearer <GATEWAY_WRITE_TOKEN>`; store that
 
 Caregiver read routes require the D1 session and enforce the caregiver-to-recipient device mapping.
 
+The dashboard response also includes `node_latest` and `node_freshness`, so the Overview can keep showing the Node's `source_seq` and HC-SR04 distance when a newer Gateway-local record arrives. Overview opens in live mode and polls every five seconds. Until the first cloud record arrives, it displays an explicitly labeled demo sample; demo values are not stored in D1.
+
 ## Gateway write API
 
 - `POST /api/telemetry` — store one Node or Gateway-local telemetry record

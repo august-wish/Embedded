@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=20261115-event-status-nav">
+<link rel="stylesheet" href="styles.css?v=20261123-live-node">
 </head>
 <body>
   <svg class="svg-sprite" aria-hidden="true">
@@ -97,6 +97,16 @@
             </div>
           </div>
 
+          <section class="node-trace" aria-label="Latest Node telemetry">
+            <div class="node-trace-heading"><span id="nodeTraceLabel">NODE TELEMETRY · DEMO SAMPLE</span><small>Updates automatically when Gateway data arrives</small></div>
+            <div class="node-trace-values">
+              <div><span>NODE</span><strong id="nodeTraceSource">NODE_01</strong></div>
+              <div><span>SEQ</span><strong id="nodeTraceSeq">125</strong></div>
+              <div><span>DISTANCE</span><strong><span id="nodeTraceDistance">46.2</span> <small>cm</small></strong></div>
+              <div><span>CLOUD RECEIVED</span><strong id="nodeTraceTime">Unavailable</strong></div>
+            </div>
+          </section>
+
           <div class="emergency-banner" id="emergencyBanner" hidden>
             <div class="emergency-icon"><svg><use href="#i-alert"/></svg></div>
             <div class="emergency-copy"><span class="alert-label">EMERGENCY ALERT</span><h3 id="bannerTitle">Possible fall detected</h3><p id="bannerCopy">TinyML motion analysis detected a fall-like event at <strong>10:42:18</strong>.</p></div>
@@ -164,8 +174,8 @@
           <div class="scenario-control overview-demo-control">
             <label for="scenarioSelect">Demo state</label>
             <div class="select-wrap"><select id="scenarioSelect">
-              <option value="live">Live database</option>
-              <option value="normal" selected>Normal operation</option>
+              <option value="live" selected>Live database</option>
+              <option value="normal">Normal operation</option>
               <option value="high_heart">High heart rate</option>
               <option value="dark">Dark environment</option>
               <option value="obstacle">Obstacle detected</option>
