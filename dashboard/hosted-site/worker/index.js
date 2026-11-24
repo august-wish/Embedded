@@ -5,6 +5,7 @@ const styles = "__SMART_CANE_CSS__";
 const appScript = "__SMART_CANE_JS__";
 
 const CONTRACT_VERSION = "0.2.1";
+const FIREBASE_LATEST_URL = "https://smart-cane-48bb0-default-rtdb.asia-southeast1.firebasedatabase.app/smart_cane/latest.json";
 const FRESH_AFTER_MS = 30_000;
 const OFFLINE_AFTER_MS = 90_000;
 const GPS_CURRENT_AFTER_MS = 90_000;
@@ -277,6 +278,21 @@ function stableId(value, prefix) {
 function allowedValue(value, choices, fallback) {
   const text = cleanText(value, fallback, 40);
   return choices.includes(text) ? text : fallback;
+}
+
+function normalizeFirebaseNode(input) {
+  if (!input || !Number.isSafeInteger(input.node_id) || input.node_id < 0 || !Number.isSafeInteger(input.seq) || input.seq < 0) {
+    return { error: "Firebase latest record needs nonnegative integer node_id and seq" };
+  }
+  const rawDistance = input.distance_cm;
+  const numericDistance = typeof rawDistance === "number" || (typeof rawDistance === "string" && /^\d+(?:\.\d+)?$/.test(rawDistance))
+    ? finiteNumber(rawDistance, { min: 0, max: 1000 }) : null;
+  const distanceState = numericDistance !== null ? "valid" : rawDistance === "invalid" ? "invalid" : "missing";
+  return { value: {
+    node_id: input.node_id, seq: input.seq, distance_cm: numericDistance, distance_valid: numericDistance !== null,
+    distance_state: distanceState, fetched_at_utc: new Date().toISOString(), measurement_time_utc: null,
+    freshness: "unknown_clock", source: "firebase_rtdb",
+  } };
 }
 
 function normalizeTelemetry(input) {
@@ -618,6 +634,20 @@ async function handleApi(request, env, url) {
     if (!user) return json({ error: "Sign in required" }, 401);
     await ensureCaregiver(env, user);
     return json({ user });
+  }
+  if (request.method === "GET" && url.pathname === "/api/node/firebase/latest") {
+    if (!(await authenticatedUser(request, env))) return json({ error: "Sign in required" }, 401);
+    let response;
+    try {
+      response = await fetch(FIREBASE_LATEST_URL, { headers: { accept: "application/json" }, signal: AbortSignal.timeout(4500) });
+    } catch {
+      return json({ error: "Firebase latest feed is unavailable" }, 502);
+    }
+    if (!response.ok) return json({ error: "Firebase latest feed is unavailable" }, 502);
+    let record;
+    try { record = await response.json(); } catch { return json({ error: "Firebase latest feed returned invalid JSON" }, 502); }
+    const parsed = normalizeFirebaseNode(record);
+    return parsed.error ? json({ error: parsed.error }, 502) : json(parsed.value);
   }
   if (request.method === "GET" && url.pathname === "/api/people") {
     const user = await authenticatedUser(request, env);

@@ -131,7 +131,7 @@ const protectedApp = await request("/app", { headers: cookieHeaders });
 assert.equal(protectedApp.status, 200);
 const appText = await protectedApp.text();
 assert.match(appText, /id="root"/);
-assert.match(appText, /app\.js\?v=20261123-live-node/);
+assert.match(appText, /app\.js\?v=20261124-firebase-node/);
 
 const appScript = await request("/app.js");
 assert.equal(appScript.status, 200);
@@ -150,6 +150,31 @@ assert.equal((await request("/api/session", { headers: authHeaders })).status, 4
 const session = await request("/api/session", { headers: cookieHeaders });
 assert.equal(session.status, 200);
 assert.equal((await session.json()).user.name, "Pim Caregiver");
+
+assert.equal((await request("/api/node/firebase/latest")).status, 401);
+const originalFetch = globalThis.fetch;
+globalThis.fetch = async (url) => {
+  assert.equal(url, "https://smart-cane-48bb0-default-rtdb.asia-southeast1.firebasedatabase.app/smart_cane/latest.json");
+  return new Response(JSON.stringify({ node_id: 1, seq: 969, distance_cm: 46.2 }), { status: 200 });
+};
+const firebaseValid = await request("/api/node/firebase/latest", { headers: cookieHeaders });
+assert.equal(firebaseValid.status, 200);
+const validNode = await firebaseValid.json();
+assert.equal(validNode.node_id, 1);
+assert.equal(validNode.seq, 969);
+assert.equal(validNode.distance_cm, 46.2);
+assert.equal(validNode.distance_valid, true);
+assert.equal(validNode.freshness, "unknown_clock");
+assert.ok(Number.isFinite(Date.parse(validNode.fetched_at_utc)));
+globalThis.fetch = async () => new Response(JSON.stringify({ node_id: 1, seq: 970, distance_cm: "invalid" }), { status: 200 });
+const firebaseInvalid = await request("/api/node/firebase/latest", { headers: cookieHeaders });
+assert.equal(firebaseInvalid.status, 200);
+const invalidNode = await firebaseInvalid.json();
+assert.equal(invalidNode.seq, 970);
+assert.equal(invalidNode.distance_cm, null);
+assert.equal(invalidNode.distance_valid, false);
+assert.equal(invalidNode.distance_state, "invalid");
+globalThis.fetch = originalFetch;
 
 const people = await request("/api/people", { headers: cookieHeaders });
 assert.equal(people.status, 200);

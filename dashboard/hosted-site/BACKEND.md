@@ -14,6 +14,7 @@ Gateway writes require `Authorization: Bearer <GATEWAY_WRITE_TOKEN>`; store that
 
 - `GET /api/health` — database and contract version
 - `GET /api/dashboard?device_id=SC-ESP32-001` — latest structured record, source health, alerts, and recent events
+- `GET /api/node/firebase/latest` — signed-in caregiver proxy for the public Firebase latest Node feed
 - `GET /api/telemetry/latest?device_id=SC-ESP32-001` — latest raw record
 - `GET /api/telemetry/history?device_id=SC-ESP32-001&from=<ISO>&to=<ISO>&source_id=NODE_01&limit=50` — time-range history sorted by Cloud ingestion time
 - `GET /api/events?device_id=SC-ESP32-001&limit=50` — stable emergency event records
@@ -22,6 +23,8 @@ Gateway writes require `Authorization: Bearer <GATEWAY_WRITE_TOKEN>`; store that
 Caregiver read routes require the D1 session and enforce the caregiver-to-recipient device mapping.
 
 The dashboard response also includes `node_latest` and `node_freshness`, so the Overview can keep showing the Node's `source_seq` and HC-SR04 distance when a newer Gateway-local record arrives. Overview opens in live mode and polls every five seconds. Until the first cloud record arrives, it displays an explicitly labeled demo sample; demo values are not stored in D1.
+
+Overview also polls the team's public Firebase RTDB `smart_cane/latest.json` through the Worker. That feed currently has only `node_id`, `seq`, and `distance_cm`. Its values take priority in the separate shared Node feed panel; `"invalid"` is displayed as unavailable, not zero. The proxy records when it fetched the value, but the Firebase record has no sensor timestamp, so the panel does not claim the measurement is fresh. The feed is global and has no device or caregiver mapping; it must not be used to assert a selected person's safety.
 
 ## Gateway write API
 

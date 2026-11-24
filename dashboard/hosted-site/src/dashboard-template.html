@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=20261123-live-node">
+<link rel="stylesheet" href="styles.css?v=20261124-firebase-node">
 </head>
 <body>
   <svg class="svg-sprite" aria-hidden="true">
@@ -80,7 +80,7 @@
               <div><span class="label">SAFETY SUMMARY</span><h3 id="safetyStatus">No active safety alerts</h3><p id="safetyMessage">Somchai is safe and being monitored normally.</p></div>
             </div>
             <div class="safety-meta">
-              <div><svg><use href="#i-link"/></svg><span>Device connected</span><strong id="activeDeviceId">SC-ESP32-001</strong></div>
+              <div><svg><use href="#i-link"/></svg><span>Selected device</span><strong id="activeDeviceId">SC-ESP32-001</strong></div>
               <div><svg><use href="#i-clock"/></svg><span>Latest sync</span><strong id="lastStatusTime">Just now</strong></div>
               <div><svg><use href="#i-user"/></svg><span>Monitored user</span><strong id="activeEmergencies">Somchai</strong></div>
             </div>
@@ -98,12 +98,12 @@
           </div>
 
           <section class="node-trace" aria-label="Latest Node telemetry">
-            <div class="node-trace-heading"><span id="nodeTraceLabel">NODE TELEMETRY · DEMO SAMPLE</span><small>Updates automatically when Gateway data arrives</small></div>
+            <div class="node-trace-heading"><span id="nodeTraceLabel">NODE TELEMETRY · DEMO SAMPLE</span><small id="nodeTraceDetail">Updates automatically when Gateway data arrives</small></div>
             <div class="node-trace-values">
               <div><span>NODE</span><strong id="nodeTraceSource">NODE_01</strong></div>
               <div><span>SEQ</span><strong id="nodeTraceSeq">125</strong></div>
               <div><span>DISTANCE</span><strong><span id="nodeTraceDistance">46.2</span> <small>cm</small></strong></div>
-              <div><span>CLOUD RECEIVED</span><strong id="nodeTraceTime">Unavailable</strong></div>
+              <div><span id="nodeTraceTimeLabel">CLOUD RECEIVED</span><strong id="nodeTraceTime">Unavailable</strong></div>
             </div>
           </section>
 

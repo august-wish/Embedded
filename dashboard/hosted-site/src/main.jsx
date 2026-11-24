@@ -83,6 +83,12 @@ function mapLive(payload) {
     aiDetail: readings.ai?.valid ? `${readings.ai.model_name || 'Model'} ${readings.ai.model_version || ''}` : 'No valid AI metadata',
   };
 }
+function withFirebaseNode(data, node) {
+  if (!node || !Number.isSafeInteger(node.node_id) || !Number.isSafeInteger(node.seq)) return data;
+  return { ...data, nodeFeed: 'firebase', nodeSourceId: String(node.node_id), sourceSeq: node.seq,
+    distanceCm: node.distance_valid ? node.distance_cm : null, nodeDistanceState: node.distance_state,
+    nodeFreshness: 'unknown_clock', nodeCloudTime: node.fetched_at_utc };
+}
 function ActivityList({ scenario, data }) {
   const first = scenario === 'high_heart' ? ['heart', 'High heart rate', '132 BPM · check the user'] : scenario === 'dark' ? ['sun', 'Low light detected', '8 lux · visibility may be limited'] : scenario === 'fall' ? ['alert', 'Possible fall detected', 'Emergency event requires attention'] : scenario === 'sos' ? ['alert', 'SOS button pressed', 'Manual emergency triggered'] : scenario === 'obstacle' ? ['scan', 'Obstacle detected', 'Person detected at 34 cm'] : scenario === 'offline' ? ['wifi', 'Device connection lost', 'Last contact was 4 minutes ago'] : ['move', 'Walking detected', 'Movement pattern is normal'];
   const items = scenario === 'live'
@@ -142,14 +148,22 @@ function App() {
     if (scenario !== 'live') return;
     let active = true;
     async function refresh() {
-      try {
-        const response = await fetch(`/api/dashboard?device_id=${encodeURIComponent(person.device_id)}`, { cache: 'no-store' });
-        if (!response.ok) throw new Error(`Dashboard API returned ${response.status}`);
-        const value = mapLive(await response.json());
-        if (active) setLiveData(value);
-      } catch {
-        if (active) setLiveData({ ...emptyLive, safetyMessage: 'The live database could not be reached. Demo scenarios remain available.', sync: 'API unavailable' });
+      const [dashboardResult, firebaseResult] = await Promise.allSettled([
+        fetch(`/api/dashboard?device_id=${encodeURIComponent(person.device_id)}`, { cache: 'no-store' }),
+        fetch('/api/node/firebase/latest', { cache: 'no-store' }),
+      ]);
+      if (!active) return;
+      const dashboardResponse = dashboardResult.status === 'fulfilled' ? dashboardResult.value : null;
+      const firebaseResponse = firebaseResult.status === 'fulfilled' ? firebaseResult.value : null;
+      if (dashboardResponse?.status === 401 || firebaseResponse?.status === 401) { window.location.assign('/'); return; }
+      let value = { ...emptyLive, safetyMessage: 'The caregiver database could not be reached.', sync: 'Database unavailable' };
+      if (dashboardResponse?.ok) {
+        try { value = mapLive(await dashboardResponse.json()); } catch { /* Keep the database unavailable state. */ }
       }
+      if (firebaseResponse?.ok) {
+        try { value = withFirebaseNode(value, await firebaseResponse.json()); } catch { /* Keep the D1 reading or demo state. */ }
+      }
+      if (active) setLiveData(value);
     }
     refresh();
     const timer = setInterval(refresh, 5000);
@@ -199,10 +213,11 @@ function App() {
     movementValue: data.movement, movementChip: data.movementChip, movementDetail: data.movementDetail,
     lightValue: lightValid ? data.light : '—', lightChip: lowLight ? 'Low light' : !lightValid ? 'Invalid' : 'Normal', lightDetail: lowLight ? 'Visibility may be limited' : !lightValid ? 'Sensor marked this reading invalid' : 'Comfortable lighting',
     contractVersion: `v${data.schemaVersion || '0.2'}`, sourceIdentity: `${data.sourceId || person.device_id} · ${data.gatewayId || person.device_id}`, originKind: data.originKind === 'physical' ? 'Physical device' : data.originKind === 'simulated' ? 'Simulated data' : 'Unknown origin', freshnessState: String(data.freshness || 'fresh').replaceAll('_', ' '), sampleTime: formatTime(data.sampleTime), cloudTime: formatTime(data.cloudTime),
-    nodeTraceLabel: data.nodeFreshness === 'sample' ? 'NODE TELEMETRY · DEMO SAMPLE' : data.nodeFreshness === 'fresh' ? 'NODE TELEMETRY · LIVE' : data.nodeFreshness === 'stale' ? 'NODE TELEMETRY · STALE' : data.nodeFreshness === 'offline' ? 'NODE TELEMETRY · OFFLINE' : 'NODE TELEMETRY · WAITING',
-    nodeTraceSource: data.sourceId || '—', nodeTraceSeq: data.sourceSeq ?? '—',
+    nodeTraceLabel: data.nodeFeed === 'firebase' ? 'SHARED NODE FEED · FIREBASE' : data.nodeFreshness === 'sample' ? 'NODE TELEMETRY · DEMO SAMPLE' : data.nodeFreshness === 'fresh' ? 'NODE TELEMETRY · LIVE' : data.nodeFreshness === 'stale' ? 'NODE TELEMETRY · STALE' : data.nodeFreshness === 'offline' ? 'NODE TELEMETRY · OFFLINE' : 'NODE TELEMETRY · WAITING',
+    nodeTraceDetail: data.nodeFeed === 'firebase' ? `Shared feed · ${data.nodeDistanceState === 'invalid' ? 'distance invalid · ' : ''}sensor age unknown` : 'Updates automatically when Gateway data arrives',
+    nodeTraceSource: data.nodeSourceId || data.sourceId || '—', nodeTraceSeq: data.sourceSeq ?? '—',
     nodeTraceDistance: (scenario === 'live' ? data.distanceCm ?? (data.nodeFreshness === 'sample' ? data.obstacle : null) : data.obstacle) ?? '—',
-    nodeTraceTime: formatTime(data.nodeCloudTime),
+    nodeTraceTimeLabel: data.nodeFeed === 'firebase' ? 'FETCHED AT' : 'CLOUD RECEIVED', nodeTraceTime: formatTime(data.nodeCloudTime),
     gpsAvailability: gpsValid ? '● GPS valid' : '● GPS unavailable', locationLabel: gpsValid ? 'Validated GPS position' : 'Waiting for a valid GPS fix', locationCoordinates: gpsValid ? `${Number(data.latitude).toFixed(6)}°, ${Number(data.longitude).toFixed(6)}°${data.gpsAccuracy != null ? ` · Accuracy ±${data.gpsAccuracy} m` : ''}` : 'Coordinates hidden because fix_valid is false or stale', gpsTimestamp: gpsValid ? formatTime(data.sampleTime || data.cloudTime) : 'Unavailable', markerStatus: gpsValid ? 'Updated just now' : 'No live GPS reading',
     bannerTitle: data.alertType, bannerCopy: data.alertType === 'SOS button pressed' ? 'The user triggered a manual SOS alert.' : 'TinyML motion analysis detected a fall-like event.', cautionLabel: highHeart ? 'HEART RATE CAUTION' : 'LOW LIGHT CAUTION', cautionTitle: highHeart ? `High heart rate: ${data.heart} BPM` : `Dark environment: ${data.light} lux`, cautionCopy: highHeart ? 'Please check how the user is feeling.' : 'Visibility may be limited. Please check the surroundings.',
     caregiverInitials: session?.name?.split(/\s+/).slice(0,2).map((x)=>x[0]).join('').toUpperCase() || 'CG', caregiverName: session?.name || 'Caregiver', caregiverEmail: session?.email || 'Signed in securely', navAlertCount: alertCount,
