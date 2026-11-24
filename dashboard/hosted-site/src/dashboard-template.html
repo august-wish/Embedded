@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=20261124-firebase-node">
+<link rel="stylesheet" href="styles.css?v=20261124-live-no-data">
 </head>
 <body>
   <svg class="svg-sprite" aria-hidden="true">
@@ -122,20 +122,20 @@
             <article class="metric-card" id="heartCard">
               <div class="metric-head"><span class="metric-icon heart"><svg><use href="#i-heart"/></svg></span><span class="status-chip status-normal" id="heartChip">Normal</span></div>
               <span class="metric-label">Heart rate</span><div class="metric-value"><strong id="heartValue">76</strong><span id="heartUnit">BPM</span></div>
-              <svg class="sparkline" viewBox="0 0 220 48" preserveAspectRatio="none"><path class="area heart-area" d="M0 38 C22 38 25 20 42 24 S66 45 82 27 S105 12 120 30 S144 43 160 25 S187 12 220 20 L220 48 L0 48Z"/><path class="line heart-line" d="M0 38 C22 38 25 20 42 24 S66 45 82 27 S105 12 120 30 S144 43 160 25 S187 12 220 20"/></svg>
-              <div class="metric-foot"><span id="heartDetail">Within resting range</span><span class="freshness">Updated 8 sec ago</span></div>
+              <svg class="sparkline" id="heartVisual" viewBox="0 0 220 48" preserveAspectRatio="none"><path class="area heart-area" d="M0 38 C22 38 25 20 42 24 S66 45 82 27 S105 12 120 30 S144 43 160 25 S187 12 220 20 L220 48 L0 48Z"/><path class="line heart-line" d="M0 38 C22 38 25 20 42 24 S66 45 82 27 S105 12 120 30 S144 43 160 25 S187 12 220 20"/></svg>
+              <div class="metric-foot"><span id="heartDetail">Within resting range</span><span class="freshness" id="heartFreshness">Demo sample</span></div>
             </article>
             <article class="metric-card" id="movementCard">
               <div class="metric-head"><span class="metric-icon move"><svg><use href="#i-move"/></svg></span><span class="status-chip status-normal" id="movementChip">Normal</span></div>
               <span class="metric-label">Movement status</span><div class="metric-value text-value"><strong id="movementValue">Walking</strong></div>
-              <div class="motion-viz"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
-              <div class="metric-foot"><span id="movementDetail">Steady movement pattern</span><span class="freshness">Updated 5 sec ago</span></div>
+              <div class="motion-viz" id="movementVisual"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+              <div class="metric-foot"><span id="movementDetail">Steady movement pattern</span><span class="freshness" id="movementFreshness">Demo sample</span></div>
             </article>
             <article class="metric-card" id="lightCard">
               <div class="metric-head"><span class="metric-icon sun"><svg><use href="#i-sun"/></svg></span><span class="status-chip status-normal" id="lightChip">Normal</span></div>
               <span class="metric-label">Environment light</span><div class="metric-value"><strong id="lightValue">620</strong><span>lux</span></div>
-              <div class="light-viz"><svg><use href="#i-sun"/></svg><span><i style="width:67%"></i></span></div>
-              <div class="metric-foot"><span id="lightDetail">Comfortable lighting</span><span class="freshness">Updated 12 sec ago</span></div>
+              <div class="light-viz" id="lightVisual"><svg><use href="#i-sun"/></svg><span><i style="width:67%"></i></span></div>
+              <div class="metric-foot"><span id="lightDetail">Comfortable lighting</span><span class="freshness" id="lightFreshness">Demo sample</span></div>
             </article>
           </div>
 
@@ -155,7 +155,7 @@
                   </svg>
                   <div class="location-marker" id="locationMarker"><span class="marker-wave"></span><span class="marker-pin"><svg><use href="#i-pin"/></svg></span><div class="marker-label"><strong>Somchai’s Smart Cane</strong><span id="markerStatus">Updated just now</span></div></div>
                   <div class="map-controls"><button aria-label="Zoom in">+</button><button aria-label="Zoom out">−</button></div>
-                  <div class="map-legend"><span class="gps-dot"></span>Latest GPS position</div>
+                  <div class="map-legend" id="overviewMapLegend"><span class="gps-dot"></span>Latest GPS position</div>
                 </div>
               </div>
               <div class="location-details"><div><span>LAST VALIDATED POSITION</span><strong id="locationLabel">Waiting for a valid GPS fix</strong><small id="locationCoordinates">Coordinates unavailable</small></div><div class="location-time"><span>GPS SAMPLE TIME</span><strong id="gpsTimestamp">Unavailable</strong></div><a class="btn btn-secondary maps-link disabled-link" id="overviewMapsLink" aria-disabled="true" target="_blank" rel="noreferrer"><svg><use href="#i-external"/></svg>Open in Google Maps</a></div>

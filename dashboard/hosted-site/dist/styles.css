@@ -196,6 +196,9 @@ body{font-size:16px}
 }
 
 /* Alerts follow the hero in document flow so they never cover the safety summary. */
+.metric-live-note{display:flex;align-items:center;min-height:42px;margin:10px 0;color:#6b8090;font-size:14px;line-height:1.35}
+#heartCard .metric-live-note{grid-column:1/-1;grid-row:3;align-self:center;margin:0}
+#locationMarker[hidden]{display:none}
 #page-overview > .emergency-banner,#page-overview > .caution-banner{position:relative;width:100%;min-height:0;margin:18px 0;z-index:auto}
 #page-overview > .emergency-banner[hidden],#page-overview > .caution-banner[hidden]{display:none}
 @media(max-width:560px){#page-overview > .emergency-banner,#page-overview > .caution-banner{padding:16px;gap:12px}}

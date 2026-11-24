@@ -131,7 +131,7 @@ const protectedApp = await request("/app", { headers: cookieHeaders });
 assert.equal(protectedApp.status, 200);
 const appText = await protectedApp.text();
 assert.match(appText, /id="root"/);
-assert.match(appText, /app\.js\?v=20261124-firebase-node/);
+assert.match(appText, /app\.js\?v=20261124-live-no-data/);
 
 const appScript = await request("/app.js");
 assert.equal(appScript.status, 200);

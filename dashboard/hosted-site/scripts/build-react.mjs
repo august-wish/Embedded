@@ -6,7 +6,7 @@ const root = path.resolve(import.meta.dirname, '..');
 const html = readFileSync(path.join(root, 'src/dashboard-template.html'), 'utf8');
 const head = html.match(/<head>([\s\S]*?)<\/head>/)?.[1];
 if (!head) throw new Error('Dashboard template must contain a head element');
-const page = `<!doctype html><html lang="en"><head>${head}</head><body><div id="root"></div><script defer src="app.js?v=20261124-firebase-node"></script></body></html>`;
+const page = `<!doctype html><html lang="en"><head>${head}</head><body><div id="root"></div><script defer src="app.js?v=20261124-live-no-data"></script></body></html>`;
 writeFileSync(path.join(root, 'dist/index.html'), page);
 
 await build({

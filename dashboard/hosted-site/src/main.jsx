@@ -25,8 +25,7 @@ const scenarios = {
   sos: { status: 'Emergency', state: 'emergency', safetyMessage: 'The SOS button was pressed. Contact the user and verify their location.', movement: 'Stationary', movementChip: 'Check user', movementDetail: 'No movement for 18 sec', heart: 88, emergency: true, alertType: 'SOS button pressed' },
   offline: { status: 'Offline', state: 'offline', safetyMessage: 'Live monitoring is unavailable. Displaying the last known readings from 4 minutes ago.', connection: 'Offline', sync: 'Last seen 4 min ago', movement: 'Unknown', movementChip: 'Offline', movementDetail: 'Live motion unavailable', heart: 74, gpsValid: false, freshness: 'offline', lastUpdatedLabel: '4 min ago' },
 };
-const emptyLive = { ...demoBase, status: 'Offline', state: 'offline', safetyMessage: 'Waiting for the first reading from Smart Cane.', connection: 'Offline', sync: 'No live data yet', heart: null, light: null, obstacle: null, sourceSeq: null, nodeFreshness: 'unknown_clock', movement: 'Unknown', movementChip: 'Waiting', movementDetail: 'Waiting for telemetry', heartValid: false, lightValid: false, gpsValid: false, latitude: null, longitude: null, freshness: 'unknown_clock', originKind: 'unknown', lastUpdatedLabel: 'No readings yet', sourceId: null, gatewayId: null };
-const sampleLive = { ...demoBase, status: 'Example data', state: 'offline', safetyMessage: 'These are sample readings. Waiting for telemetry from the real device.', obstacle: 46.2, sourceId: 'NODE_01', gatewayId: 'GW_01', sourceSeq: 125, connection: 'Demo', sync: 'No live reading yet', freshness: 'sample', lastUpdatedLabel: 'No live reading yet', gpsValid: false, latitude: null, longitude: null, sampleTime: null, cloudTime: null, nodeCloudTime: null, recentEvents: [] };
+const emptyLive = { ...demoBase, status: 'Waiting for data', state: 'offline', safetyMessage: 'No caregiver sensor readings have arrived for this person. The shared Node feed below is separate.', connection: 'No caregiver data', sync: 'No caregiver readings yet', heart: null, light: null, obstacle: null, sourceSeq: null, nodeFreshness: 'unknown_clock', movement: '—', movementChip: 'No data', movementDetail: 'No movement reading yet', heartValid: false, lightValid: false, gpsValid: false, latitude: null, longitude: null, freshness: 'unknown_clock', originKind: 'unknown', lastUpdatedLabel: 'No caregiver reading yet', sourceId: null, gatewayId: null, sampleTime: null, cloudTime: null, nodeCloudTime: null, recentEvents: [], hasTelemetry: false };
 const scenarioLabels = { live: 'Live database', normal: 'Normal operation', high_heart: 'High heart rate', dark: 'Dark environment', obstacle: 'Obstacle detected', fall: 'Fall detected', sos: 'SOS triggered', offline: 'Device offline' };
 
 function Icon({ name }) { return <svg><use href={`#i-${name}`} /></svg>; }
@@ -46,7 +45,7 @@ function mapLive(payload) {
   if (!latest) {
     const firstAlert = payload.active_alerts?.[0];
     if (firstAlert) return { ...emptyLive, status: 'Emergency', state: 'emergency', safetyMessage: 'An emergency was reported. Contact the user and check the alert details.', emergency: true, alertType: eventLabel(firstAlert.event_type), eventTime: formatTime(firstAlert.occurred_at_utc), alertId: firstAlert.id, recentEvents: payload.recent_events || [] };
-    return { ...sampleLive, schemaVersion: payload.contract?.schema_version || '0.2.1', recentEvents: payload.recent_events || [] };
+    return { ...emptyLive, schemaVersion: payload.contract?.schema_version || '0.2.1', recentEvents: payload.recent_events || [] };
   }
   const alert = payload.active_alerts?.[0];
   const readings = latest?.readings || {};
@@ -65,7 +64,7 @@ function mapLive(payload) {
   const seconds = payload.stale_seconds;
   const lastUpdatedLabel = seconds == null ? 'Unavailable' : seconds < 10 ? 'Just now' : `${seconds} sec ago`;
   return {
-    ...demoBase, status: alert ? 'Emergency' : offline ? 'Offline' : stale ? 'Stale data' : highHeart ? 'Warning' : lowLight ? 'Caution' : 'Safe',
+    ...demoBase, hasTelemetry: true, status: alert ? 'Emergency' : offline ? 'Offline' : stale ? 'Stale data' : highHeart ? 'Warning' : lowLight ? 'Caution' : 'Safe',
     state: alert ? 'emergency' : offline ? 'offline' : (stale || highHeart || lowLight) ? 'warning' : 'safe',
     safetyMessage: alert ? (eventLabel(alert.event_type) === 'SOS button pressed' ? 'The SOS button was pressed. Contact the user and verify their location.' : 'Possible fall detected. Immediate caregiver attention is recommended.') : offline ? `No telemetry received for ${seconds ?? 'an unknown number of'} seconds. Showing the last known reading.` : stale ? 'The latest record is stale and is not being presented as current data.' : highHeart ? 'Heart rate is higher than the expected resting range. Please check how the user is feeling.' : lowLight ? 'The user appears to be in a dark environment. Visibility may be limited.' : 'Live device data is connected. No safety concerns detected.',
     connection: offline ? 'Offline' : 'Live', sync: offline || stale ? `Last seen ${lastUpdatedLabel}` : 'Database synced',
@@ -108,7 +107,7 @@ function App() {
   const [people, setPeople] = useState([]);
   const [personId, setPersonId] = useState(initialPerson.device_id);
   const [scenario, setScenario] = useState('live');
-  const [liveData, setLiveData] = useState(sampleLive);
+  const [liveData, setLiveData] = useState(emptyLive);
   const [page, setPage] = useState('overview');
   const [alertModal, setAlertModal] = useState(false);
   const [peopleModal, setPeopleModal] = useState(false);
@@ -209,9 +208,12 @@ function App() {
     safetyMessage: data.state === 'safe' && scenario === 'live' ? `${person.display_name} is safe and being monitored normally.` : data.safetyMessage,
     activeDeviceId: person.device_id, lastStatusTime: data.lastUpdatedLabel || (data.state === 'offline' ? 'Unavailable' : 'Just now'), activeEmergencies: person.display_name,
     headerConnection: data.connection, syncTime: data.sync, lastSyncTop: data.cloudTime ? formatTime(data.cloudTime) : data.lastUpdatedLabel || 'Waiting for data',
-    heartValue: heartValid ? data.heart : '—', heartChip: highHeart ? 'High' : !heartValid ? 'Invalid' : data.state === 'offline' ? 'Stale' : 'Normal', heartDetail: highHeart ? 'Above expected resting range' : !heartValid ? 'Sensor marked this reading invalid' : 'Within resting range',
+    heartValue: heartValid ? data.heart : '—', heartChip: !data.hasTelemetry && scenario === 'live' ? 'No data' : !heartValid ? 'Invalid' : data.state === 'offline' || data.freshness === 'stale' ? 'Stale' : highHeart ? 'High' : 'Normal', heartDetail: !data.hasTelemetry && scenario === 'live' ? 'No heart rate reading yet' : !heartValid ? 'Sensor marked this reading invalid' : highHeart ? 'Above expected resting range' : 'Within resting range',
     movementValue: data.movement, movementChip: data.movementChip, movementDetail: data.movementDetail,
-    lightValue: lightValid ? data.light : '—', lightChip: lowLight ? 'Low light' : !lightValid ? 'Invalid' : 'Normal', lightDetail: lowLight ? 'Visibility may be limited' : !lightValid ? 'Sensor marked this reading invalid' : 'Comfortable lighting',
+    lightValue: lightValid ? data.light : '—', lightChip: !data.hasTelemetry && scenario === 'live' ? 'No data' : !lightValid ? 'Invalid' : data.state === 'offline' || data.freshness === 'stale' ? 'Stale' : lowLight ? 'Low light' : 'Normal', lightDetail: !data.hasTelemetry && scenario === 'live' ? 'No light reading yet' : !lightValid ? 'Sensor marked this reading invalid' : lowLight ? 'Visibility may be limited' : 'Comfortable lighting',
+    heartFreshness: scenario === 'live' ? data.hasTelemetry ? `Latest record: ${data.lastUpdatedLabel}` : 'No reading yet' : 'Demo sample',
+    movementFreshness: scenario === 'live' ? data.hasTelemetry ? `Latest record: ${data.lastUpdatedLabel}` : 'No reading yet' : 'Demo sample',
+    lightFreshness: scenario === 'live' ? data.hasTelemetry ? `Latest record: ${data.lastUpdatedLabel}` : 'No reading yet' : 'Demo sample',
     contractVersion: `v${data.schemaVersion || '0.2'}`, sourceIdentity: `${data.sourceId || person.device_id} · ${data.gatewayId || person.device_id}`, originKind: data.originKind === 'physical' ? 'Physical device' : data.originKind === 'simulated' ? 'Simulated data' : 'Unknown origin', freshnessState: String(data.freshness || 'fresh').replaceAll('_', ' '), sampleTime: formatTime(data.sampleTime), cloudTime: formatTime(data.cloudTime),
     nodeTraceLabel: data.nodeFeed === 'firebase' ? 'SHARED NODE FEED · FIREBASE' : data.nodeFreshness === 'sample' ? 'NODE TELEMETRY · DEMO SAMPLE' : data.nodeFreshness === 'fresh' ? 'NODE TELEMETRY · LIVE' : data.nodeFreshness === 'stale' ? 'NODE TELEMETRY · STALE' : data.nodeFreshness === 'offline' ? 'NODE TELEMETRY · OFFLINE' : 'NODE TELEMETRY · WAITING',
     nodeTraceDetail: data.nodeFeed === 'firebase' ? `Shared feed · ${data.nodeDistanceState === 'invalid' ? 'distance invalid · ' : ''}sensor age unknown` : 'Updates automatically when Gateway data arrives',
@@ -239,9 +241,11 @@ function App() {
     if (id === 'safetyStatusIcon') return render({}, <><Icon name={data.state === 'safe' ? 'shield' : data.state === 'offline' ? 'wifi' : 'alert'} /><span className="pulse-ring" /></>);
     if (id === 'emergencyBanner') return render({ hidden: !data.emergency });
     if (id === 'cautionBanner') return render({ hidden: !(data.state === 'warning' && (highHeart || lowLight)) });
-    if (id === 'heartCard' || id === 'lightCard') return render({ className: `metric-card ${data.state === 'offline' ? 'stale' : ''} ${(id === 'heartCard' && highHeart) || (id === 'lightCard' && lowLight) ? 'warning-metric' : ''}` });
+    if (id === 'heartCard' || id === 'lightCard') return render({ className: `metric-card ${(id === 'heartCard' && highHeart) || (id === 'lightCard' && lowLight) ? 'warning-metric' : ''}` });
+    if (id === 'heartVisual' || id === 'movementVisual' || id === 'lightVisual') return scenario === 'live' ? <div className="metric-live-note">{data.hasTelemetry ? 'Trend data unavailable' : 'Waiting for caregiver sensor data'}</div> : render();
     if (id === 'heartChip' || id === 'lightChip') return render({ className: `status-chip ${id === 'heartChip' ? highHeart ? 'status-danger' : !heartValid ? 'status-muted' : 'status-normal' : lowLight ? 'status-warning' : !lightValid ? 'status-muted' : 'status-normal'}` }, overrides[id]);
     if (id === 'gpsAvailability') return render({ className: `gps-live ${gpsValid ? '' : 'gps-invalid'}` }, overrides[id]);
+    if (id === 'overviewMapLegend') return render({}, gpsValid ? <><span className="gps-dot" />Latest GPS position</> : 'Illustrative map · no GPS position');
     if (id === 'overviewMapsLink' || (node.name === 'a' && attrs.className?.includes('maps-link'))) return render({ href: mapsHref, 'aria-disabled': !gpsValid, className: `${attrs.className || ''} ${gpsValid ? '' : 'disabled-link'}`.trim(), hidden: id !== 'overviewMapsLink' && !gpsValid });
     if (id === 'recentActivity') return render({}, <ActivityList scenario={scenario} data={data} />);
     if (id === 'activeAlertArea') return render({}, <AlertArea data={data} person={person} acknowledged={acknowledged} onDetails={() => setAlertModal(true)} onAcknowledge={acknowledge} />);
@@ -260,7 +264,7 @@ function App() {
     if (id === 'acknowledgeButton') return render({ onClick: acknowledge });
     if (id === 'overviewMap') return render({ style: data.state === 'offline' ? { filter: 'saturate(.55)' } : undefined });
     if (id === 'alertPageStatus') return render({ className: `status-chip ${data.emergency ? 'status-danger' : 'status-normal'}` }, overrides[id]);
-    if (id === 'locationMarker') return render({}, domToReact(node.children, { replace(child) { if (child.name === 'div' && child.attribs?.class === 'marker-label') return <div className="marker-label"><strong>{person.display_name}'s Smart Cane</strong><span>{overrides.markerStatus}</span></div>; } }));
+    if (id === 'locationMarker') return render({ hidden: !gpsValid }, domToReact(node.children, { replace(child) { if (child.name === 'div' && child.attribs?.class === 'marker-label') return <div className="marker-label"><strong>{person.display_name}'s Smart Cane</strong><span>{overrides.markerStatus}</span></div>; } }));
     if (Object.hasOwn(overrides, id)) return render({}, overrides[id]);
   }};
   return parse(markup, options);
